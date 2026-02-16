@@ -71,29 +71,41 @@
                                 <h3>Shared Ingress Gateway</h3>
                                 <p>Standardized multi-tenant ingress cluster.</p>
                                 <ul class="arch-list">
-                                    <li>Resource optimized (one LB)</li>
+                                    <li>Resource optimized (one NLB)</li>
                                     <li>Centralized policy management</li>
                                     <li><em>Risk: Noisy neighbor interference</em></li>
                                 </ul>
                                 <div class="diagram-box">
-                                    <svg viewBox="0 0 300 160" class="arch-svg">
-                                        <rect x="110" y="10" width="80" height="30" rx="2" fill="#1890ff" />
-                                        <text x="150" y="30" text-anchor="middle" fill="white" font-size="10" font-weight="bold">LB (Shared)</text>
+                                    <svg viewBox="0 0 300 200" class="arch-svg">
+                                        <!-- Shared Architecture -->
+                                        <text x="30" y="25" fill="#8c8c8c" font-size="8">CLIENTS</text>
+                                        <circle cx="15" cy="40" r="3" fill="#1890ff" />
+                                        <circle cx="15" cy="50" r="3" fill="#1890ff" />
+                                        <circle cx="15" cy="60" r="3" fill="#1890ff" />
                                         
-                                        <rect x="90" y="60" width="120" height="40" rx="2" fill="#e6f7ff" stroke="#1890ff" stroke-width="1" />
-                                        <text x="150" y="85" text-anchor="middle" fill="#003a8c" font-size="10" font-weight="bold">Istio Gateway</text>
+                                        <path d="M 25 50 L 65 50" stroke="#bfbfbf" stroke-width="1" />
                                         
-                                        <rect x="20" y="120" width="60" height="25" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="50" y="137" text-anchor="middle" fill="#595959" font-size="9">App A</text>
+                                        <!-- NLB -->
+                                        <rect x="70" y="35" width="40" height="30" rx="2" fill="#1890ff" />
+                                        <text x="90" y="53" text-anchor="middle" fill="white" font-size="9" font-weight="bold">NLB</text>
                                         
-                                        <rect x="120" y="120" width="60" height="25" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="150" y="137" text-anchor="middle" fill="#595959" font-size="9">App B</text>
+                                        <path d="M 110 50 L 145 50" stroke="#bfbfbf" stroke-width="1" />
                                         
-                                        <rect x="220" y="120" width="60" height="25" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="250" y="137" text-anchor="middle" fill="#595959" font-size="9">App C</text>
+                                        <!-- GW -->
+                                        <rect x="150" y="30" width="60" height="40" rx="2" fill="#e6f7ff" stroke="#1890ff" />
+                                        <text x="180" y="55" text-anchor="middle" fill="#003a8c" font-size="9" font-weight="bold">SHARED GW</text>
                                         
-                                        <line x1="150" y1="40" x2="150" y2="60" stroke="#8c8c8c" stroke-width="1.5" />
-                                        <path d="M 150 100 L 50 120 M 150 100 L 150 120 M 150 100 L 250 120" stroke="#bfbfbf" stroke-width="1" stroke-dasharray="2,2" />
+                                        <!-- Apps -->
+                                        <path d="M 210 50 L 245 30 M 210 50 L 245 50 M 210 50 L 245 70" stroke="#bfbfbf" stroke-width="1" stroke-dasharray="2,2" />
+                                        
+                                        <rect x="250" y="20" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                        <text x="270" y="32" text-anchor="middle" fill="#595959" font-size="8">App A</text>
+                                        
+                                        <rect x="250" y="45" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                        <text x="270" y="57" text-anchor="middle" fill="#595959" font-size="8">App B</text>
+                                        
+                                        <rect x="250" y="70" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                        <text x="270" y="82" text-anchor="middle" fill="#595959" font-size="8">App C</text>
                                     </svg>
                                 </div>
                             </div>
@@ -106,25 +118,33 @@
                                     <li><em>Risk: Increased cloud provider costs</em></li>
                                 </ul>
                                 <div class="diagram-box">
-                                    <svg viewBox="0 0 300 160" class="arch-svg">
-                                        <rect x="40" y="10" width="70" height="25" rx="2" fill="#1890ff" />
-                                        <text x="75" y="27" text-anchor="middle" fill="white" font-size="9">LB 1</text>
-                                        <rect x="40" y="50" width="70" height="35" rx="2" fill="#e6f7ff" stroke="#1890ff" />
-                                        <text x="75" y="72" text-anchor="middle" fill="#003a8c" font-size="9" font-weight="bold">GW 1</text>
-                                        <rect x="40" y="100" width="70" height="25" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="75" y="117" text-anchor="middle" fill="#595959" font-size="9">App A</text>
-                                        
-                                        <rect x="190" y="10" width="70" height="25" rx="2" fill="#1890ff" />
-                                        <text x="225" y="27" text-anchor="middle" fill="white" font-size="9">LB 2</text>
-                                        <rect x="190" y="50" width="70" height="35" rx="2" fill="#e6f7ff" stroke="#1890ff" />
-                                        <text x="225" y="72" text-anchor="middle" fill="#003a8c" font-size="9" font-weight="bold">GW 2</text>
-                                        <rect x="190" y="100" width="70" height="25" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="225" y="117" text-anchor="middle" fill="#595959" font-size="9">App B</text>
-                                        
-                                        <line x1="75" y1="35" x2="75" y2="50" stroke="#8c8c8c" />
-                                        <line x1="75" y1="85" x2="75" y2="100" stroke="#8c8c8c" />
-                                        <line x1="225" y1="35" x2="225" y2="50" stroke="#8c8c8c" />
-                                        <line x1="225" y1="85" x2="225" y2="100" stroke="#8c8c8c" />
+                                    <svg viewBox="0 0 300 200" class="arch-svg">
+                                        <!-- Dedicated Architecture -->
+                                        <!-- Stack 1 -->
+                                        <text x="20" y="20" fill="#8c8c8c" font-size="8">CLIENT A</text>
+                                        <circle cx="15" cy="35" r="3" fill="#1890ff" />
+                                        <path d="M 25 35 L 55 35" stroke="#bfbfbf" />
+                                        <rect x="60" y="25" width="40" height="20" rx="2" fill="#1890ff" />
+                                        <text x="80" y="37" text-anchor="middle" fill="white" font-size="8">NLB 1</text>
+                                        <path d="M 100 35 L 125 35" stroke="#bfbfbf" />
+                                        <rect x="130" y="20" width="50" height="30" rx="2" fill="#e6f7ff" stroke="#1890ff" />
+                                        <text x="155" y="37" text-anchor="middle" fill="#003a8c" font-size="8">GW A</text>
+                                        <path d="M 180 35 L 215 35" stroke="#bfbfbf" />
+                                        <rect x="220" y="25" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                        <text x="240" y="37" text-anchor="middle" fill="#595959" font-size="8">App A</text>
+
+                                        <!-- Stack 2 -->
+                                        <text x="20" y="75" fill="#8c8c8c" font-size="8">CLIENT B</text>
+                                        <circle cx="15" cy="90" r="3" fill="#1890ff" />
+                                        <path d="M 25 90 L 55 90" stroke="#bfbfbf" />
+                                        <rect x="60" y="80" width="40" height="20" rx="2" fill="#1890ff" />
+                                        <text x="80" y="92" text-anchor="middle" fill="white" font-size="8">NLB 2</text>
+                                        <path d="M 100 90 L 125 90" stroke="#bfbfbf" />
+                                        <rect x="130" y="75" width="50" height="30" rx="2" fill="#e6f7ff" stroke="#1890ff" />
+                                        <text x="155" y="92" text-anchor="middle" fill="#003a8c" font-size="8">GW B</text>
+                                        <path d="M 180 90 L 215 90" stroke="#bfbfbf" />
+                                        <rect x="220" y="80" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                        <text x="240" y="92" text-anchor="middle" fill="#595959" font-size="8">App B</text>
                                     </svg>
                                 </div>
                             </div>
