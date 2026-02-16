@@ -1,74 +1,83 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize State
+    // 1. Initial State from LocalStorage
     const state = {
-        stars: parseInt(localStorage.getItem('gt_warp_stars') || '0'),
-        comments: JSON.parse(localStorage.getItem('gt_warp_comments') || '[]'),
-        attested: localStorage.getItem('gt_warp_attested') === 'true'
+        stars: parseInt(localStorage.getItem('ant_istio_stars') || '0'),
+        logs: JSON.parse(localStorage.getItem('ant_istio_logs') || '[]'),
+        attested: localStorage.getItem('ant_istio_attested') === 'true'
     };
 
-    // 2. Select Elements (with null checks)
+    // 2. DOM Elements
     const starBtn = document.getElementById('btn-star');
     const postBtn = document.getElementById('btn-post');
     const commentInput = document.getElementById('user-comment');
     const starField = document.getElementById('star-field');
-    const starBadge = document.getElementById('star-count-badge');
+    const starDisplay = document.getElementById('star-count-display');
     const commentsList = document.getElementById('comments-list');
     const attestCheck = document.getElementById('migration-check');
 
-    // 3. UI Update Function
-    const updateUI = () => {
-        if (starBadge) starBadge.textContent = `${state.stars} Stars`;
-        
+    // 3. UI Sync Function
+    const syncUI = () => {
+        // Update Star Count Text
+        if (starDisplay) {
+            starDisplay.textContent = `${state.stars} Star${state.stars !== 1 ? 's' : ''} Awarded`;
+        }
+
+        // Render Stars visually
         if (starField) {
             starField.innerHTML = '';
-            const displayStars = Math.min(state.stars, 100);
-            for (let i = 0; i < displayStars; i++) {
+            // Cap visual stars to prevent DOM bloat, but keep the count accurate
+            const limit = Math.min(state.stars, 200);
+            for (let i = 0; i < limit; i++) {
                 const s = document.createElement('span');
                 s.textContent = '⭐';
-                s.style.animation = `pop 0.3s ease forwards`;
                 starField.appendChild(s);
             }
         }
 
+        // Render Timeline/Logs
         if (commentsList) {
             commentsList.innerHTML = '';
-            state.comments.slice().reverse().forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'comment-entry';
-                div.textContent = c;
-                commentsList.appendChild(div);
+            // Show latest logs first
+            state.logs.slice().reverse().forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.textContent = log;
+                commentsList.appendChild(item);
             });
         }
 
+        // Sync Checkbox
         if (attestCheck) {
             attestCheck.checked = state.attested;
         }
     };
 
     // 4. Persistence
-    const save = () => {
-        localStorage.setItem('gt_warp_stars', state.stars);
-        localStorage.setItem('gt_warp_comments', JSON.stringify(state.comments));
-        localStorage.setItem('gt_warp_attested', state.attested);
+    const saveState = () => {
+        localStorage.setItem('ant_istio_stars', state.stars);
+        localStorage.setItem('ant_istio_logs', JSON.stringify(state.logs));
+        localStorage.setItem('ant_istio_attested', state.attested);
     };
 
-    // 5. Event Listeners
+    // 5. Handlers
     if (starBtn) {
-        starBtn.onclick = () => {
+        starBtn.onclick = (e) => {
+            e.preventDefault();
             state.stars++;
-            save();
-            updateUI();
+            saveState();
+            syncUI();
         };
     }
 
     if (postBtn) {
-        postBtn.onclick = () => {
-            const val = commentInput.value.trim();
-            if (val) {
-                state.comments.push(val);
+        postBtn.onclick = (e) => {
+            e.preventDefault();
+            const text = commentInput.value.trim();
+            if (text) {
+                state.logs.push(text);
                 commentInput.value = '';
-                save();
-                updateUI();
+                saveState();
+                syncUI();
             }
         };
     }
@@ -76,34 +85,50 @@ document.addEventListener('DOMContentLoaded', () => {
     if (attestCheck) {
         attestCheck.onchange = (e) => {
             state.attested = e.target.checked;
-            save();
+            saveState();
             if (state.attested) {
-                triggerConfetti();
+                // Subtle feedback instead of alert
+                console.log('User attested successful migration.');
+                showNotification('Migration Attested Successfully!');
             }
         };
     }
 
-    const triggerConfetti = () => {
-        for (let i = 0; i < 50; i++) {
-            const p = document.createElement('div');
-            p.style.cssText = `
-                position: fixed;
-                left: ${Math.random() * 100}vw;
-                top: -10px;
-                width: 10px; height: 10px;
-                background: ${['#00d2ff', '#9d50bb', '#fff'][Math.floor(Math.random() * 3)]};
-                border-radius: 50%;
-                z-index: 1000;
-                pointer-events: none;
-            `;
-            document.body.appendChild(p);
-            p.animate([
-                { transform: 'translateY(0) rotate(0)', opacity: 1 },
-                { transform: `translateY(100vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
-            ], { duration: 2000 }).onfinish = () => p.remove();
-        }
+    // Helper: Subtle Notification
+    const showNotification = (msg) => {
+        const div = document.createElement('div');
+        div.style.cssText = `
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: white;
+            border: 1px solid #d9d9d9;
+            padding: 16px 24px;
+            border-radius: 2px;
+            box-shadow: 0 3px 6px -4px rgba(0,0,0,0.12), 0 6px 16px 0 rgba(0,0,0,0.08), 0 9px 28px 8px rgba(0,0,0,0.05);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s forwards;
+        `;
+        div.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
+        document.body.appendChild(div);
+
+        setTimeout(() => {
+            div.style.animation = 'slideOut 0.3s forwards';
+            setTimeout(() => div.remove(), 300);
+        }, 3000);
     };
 
-    // Initial Sync
-    updateUI();
+    // Add CSS for notifications
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    `;
+    document.head.appendChild(style);
+
+    // 6. Initial Sync
+    syncUI();
 });
