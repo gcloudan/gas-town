@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_v1';
+    const KEY = 'istio_station_v2';
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -10,7 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ships: parseInt(localStorage.getItem(KEY + '_ships') || '0'),
         gateways: parseInt(localStorage.getItem(KEY + '_gateways') || '0'),
         autoScrappers: parseInt(localStorage.getItem(KEY + '_auto_scrappers') || '0'),
-        autoAssemblers: parseInt(localStorage.getItem(KEY + '_auto_assemblers') || '0')
+        autoAssemblers: parseInt(localStorage.getItem(KEY + '_auto_assemblers') || '0'),
+        // Traffic State
+        packets: 0
     };
 
     // 2. Elements
@@ -30,7 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBuildShip: document.getElementById('btn-build-ship'),
         btnForgeGW: document.getElementById('btn-forge-gw'),
         btnAutoScrapper: document.getElementById('btn-auto-scrapper'),
-        btnAutoAssembler: document.getElementById('btn-auto-assembler')
+        btnAutoAssembler: document.getElementById('btn-auto-assembler'),
+        // Inspector Nodes
+        btnInject: document.getElementById('btn-inject'),
+        packetCount: document.getElementById('packet-count'),
+        simCanvas: document.getElementById('sim-canvas')
     };
 
     // 3. UI Sync
@@ -63,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nodes.shipCount) nodes.shipCount.textContent = state.ships.toLocaleString();
         if (nodes.gwCount) nodes.gwCount.textContent = state.gateways.toLocaleString();
 
-        // Button States
         nodes.btnBuildShip.disabled = state.scrap < 10;
         nodes.btnForgeGW.disabled = state.ships < 5;
         nodes.btnAutoScrapper.disabled = state.scrap < 50;
@@ -71,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         nodes.btnAutoScrapper.textContent = `Auto-Scrapper (${state.autoScrappers}) - 50 Scrap`;
         nodes.btnAutoAssembler.textContent = `Auto-Assembler (${state.autoAssemblers}) - 20 Ships`;
+
+        // Inspector
+        if (nodes.packetCount) nodes.packetCount.textContent = state.packets.toLocaleString();
     };
 
     const save = () => {
@@ -84,7 +92,25 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_auto_assemblers', state.autoAssemblers);
     };
 
-    // 4. Idle Game Logic
+    // 4. Traffic Simulator (Inspector) Logic
+    const injectPacket = () => {
+        state.packets++;
+        sync();
+        const packet = document.createElement('div');
+        packet.className = 'packet';
+        packet.style.left = '0%';
+        packet.style.top = Math.random() * 90 + '%';
+        nodes.simCanvas.appendChild(packet);
+        const anim = packet.animate([
+            { left: '0%', opacity: 1 },
+            { left: '40%', opacity: 1, filter: 'blur(0px)' },
+            { left: '60%', opacity: 0.5, filter: 'blur(10px)', scale: '1.5' },
+            { left: '100%', opacity: 1, filter: 'blur(0px)', scale: '1' }
+        ], { duration: 1500, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
+        anim.onfinish = () => packet.remove();
+    };
+
+    // 5. Idle Game Logic
     nodes.btnCollectScrap.onclick = () => {
         state.scrap++;
         save();
@@ -128,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Tick Loop (1 second)
     setInterval(() => {
         let changed = false;
         if (state.autoScrappers > 0) {
@@ -150,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
-    // 5. Hall of Fame Handlers
+    // 6. Hall of Fame Handlers
     nodes.btnStar.onclick = () => {
         state.stars++;
         save();
@@ -175,7 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 6. Global Feedback
+    if (nodes.btnInject) {
+        nodes.btnInject.onclick = injectPacket;
+    }
+
+    // 7. Global Feedback
     const notify = (msg) => {
         const div = document.createElement('div');
         div.style.cssText = `
@@ -189,20 +218,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => div.remove(), 4000);
     };
 
-    // 7. Ambient Visuals
-    setInterval(() => {
-        if (Math.random() > 0.8) {
-            const p = document.createElement('div');
-            p.style.cssText = `
-                position: fixed; width: 2px; height: 2px; background: #1890ff;
-                left: -10px; top: ${Math.random() * 100}vh; opacity: 0.3;
-                pointer-events: none; z-index: -1;
-            `;
-            document.body.appendChild(p);
-            p.animate([{ left: '-10px' }, { left: '110vw' }], 
-            { duration: 8000 + Math.random() * 5000 }).onfinish = () => p.remove();
-        }
-    }, 1000);
+    // 8. Animations
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    `;
+    document.head.appendChild(style);
 
     // Initial Sync
     sync();

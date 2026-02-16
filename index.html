@@ -12,12 +12,12 @@
     <header class="ant-header">
         <div class="ant-container header-flex">
             <div class="brand-group">
-                <svg class="station-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line><path d="M12 12l5.3-5.3"></path><path d="M12 12l-5.3 5.3"></path><path d="M12 12l5.3 5.3"></path><path d="M12 12l-5.3-5.3"></path></svg>
                 <div class="ant-logo">ISTIO SPACE STATION</div>
             </div>
             <nav class="ant-nav">
                 <a href="#motivation" class="ant-nav-link">Motivation</a>
                 <a href="#architecture" class="ant-nav-link">Architecture</a>
+                <a href="#inspector" class="ant-nav-link">Inspector</a>
                 <a href="#shipyard" class="ant-nav-link">Shipyard</a>
                 <a href="#hall-of-fame" class="ant-nav-link">Hall of Fame</a>
             </nav>
@@ -138,10 +138,24 @@
                 </div>
             </section>
 
+            <section id="inspector" class="ant-card">
+                <div class="ant-card-head">Nexus Traffic Inspector</div>
+                <div class="ant-card-body">
+                    <p>Inject telemetry packets and monitor their transit through the Space Station's Gateway.</p>
+                    <div class="simulator-container">
+                        <div id="sim-canvas"></div>
+                        <div class="sim-controls">
+                            <button id="btn-inject" class="ant-btn-primary">Inject Telemetry Packet</button>
+                            <div id="sim-stats">Packets Relayed: <span id="packet-count">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section id="shipyard" class="ant-card">
                 <div class="ant-card-head">Orbital Shipyard & Gateway Forge</div>
                 <div class="ant-card-body">
-                    <p>Build your Istio fleet to secure the quadrant.</p>
+                    <p>Build your Istio fleet to secure the quadrant. Spaceships represent pods; Gateways represent deployments.</p>
                     <div class="shipyard-grid">
                         <div class="shipyard-stats">
                             <div class="stat-box">
