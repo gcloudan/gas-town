@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v1';
+    const KEY = 'istio_station_economy_v1';
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
         attested: localStorage.getItem(KEY + '_attested') === 'true',
+        // Economy State
+        money: parseInt(localStorage.getItem(KEY + '_money') || '0'),
         scrap: parseInt(localStorage.getItem(KEY + '_scrap') || '0'),
         ships: parseInt(localStorage.getItem(KEY + '_ships') || '0'),
         gateways: parseInt(localStorage.getItem(KEY + '_gateways') || '0'),
@@ -14,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const refs = {
+        moneyCount: document.getElementById('money-count'),
+        scrapCount: document.getElementById('scrap-count'),
+        shipCount: document.getElementById('ship-count'),
+        gwCount: document.getElementById('gw-count'),
         starCount: document.getElementById('star-count'),
         starField: document.getElementById('star-field'),
         logInput: document.getElementById('log-input'),
@@ -21,12 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btnStar: document.getElementById('btn-star'),
         attestCheck: document.getElementById('attest-check'),
         timeline: document.getElementById('timeline'),
-        scrapCount: document.getElementById('scrap-count'),
-        shipCount: document.getElementById('ship-count'),
-        gwCount: document.getElementById('gw-count'),
         btnCollectScrap: document.getElementById('btn-collect-scrap'),
         btnBuildShip: document.getElementById('btn-build-ship'),
         btnForgeGW: document.getElementById('btn-forge-gw'),
+        btnSellGW: document.getElementById('btn-sell-gw'),
         btnAutoScrapper: document.getElementById('btn-auto-scrapper'),
         btnAutoAssembler: document.getElementById('btn-auto-assembler'),
         btnInject: document.getElementById('btn-inject'),
@@ -35,6 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const syncUI = () => {
+        if (refs.moneyCount) refs.moneyCount.textContent = state.money.toLocaleString();
+        if (refs.scrapCount) refs.scrapCount.textContent = state.scrap.toLocaleString();
+        if (refs.shipCount) refs.shipCount.textContent = state.ships.toLocaleString();
+        if (refs.gwCount) refs.gwCount.textContent = state.gateways.toLocaleString();
+        
         if (refs.starCount) refs.starCount.textContent = state.stars.toLocaleString();
         if (refs.starField) {
             refs.starField.innerHTML = '';
@@ -55,24 +64,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 refs.timeline.appendChild(div);
             });
         }
-        if (refs.attestCheck) refs.attestCheck.checked = state.attested;
 
-        if (refs.scrapCount) refs.scrapCount.textContent = state.scrap.toLocaleString();
-        if (refs.shipCount) refs.shipCount.textContent = state.ships.toLocaleString();
-        if (refs.gwCount) refs.gwCount.textContent = state.gateways.toLocaleString();
+        // Action states
+        refs.btnBuildShip.disabled = state.scrap < 5;
+        refs.btnForgeGW.disabled = state.ships < 3;
+        refs.btnSellGW.disabled = state.gateways < 1;
+        refs.btnAutoScrapper.disabled = state.money < 100;
+        refs.btnAutoAssembler.disabled = state.money < 500;
 
-        if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 10;
-        if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 5;
-        if (refs.btnAutoScrapper) refs.btnAutoScrapper.disabled = state.scrap < 50;
-        if (refs.btnAutoAssembler) refs.btnAutoAssembler.disabled = state.ships < 20;
-
-        if (refs.btnAutoScrapper) refs.btnAutoScrapper.textContent = `Auto-Scrapper (${state.autoScrappers}) - 50 Scrap`;
-        if (refs.btnAutoAssembler) refs.btnAutoAssembler.textContent = `Auto-Assembler (${state.autoAssemblers}) - 20 Ships`;
+        refs.btnAutoScrapper.textContent = `Auto-Scrapper (${state.autoScrappers}) - $100`;
+        refs.btnAutoAssembler.textContent = `Auto-Assembler (${state.autoAssemblers}) - $500`;
 
         if (refs.packetCount) refs.packetCount.textContent = state.packets.toLocaleString();
     };
 
     const save = () => {
+        localStorage.setItem(KEY + '_money', state.money);
         localStorage.setItem(KEY + '_stars', state.stars);
         localStorage.setItem(KEY + '_logs', JSON.stringify(state.logs));
         localStorage.setItem(KEY + '_attested', state.attested);
@@ -83,60 +90,62 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_auto_assemblers', state.autoAssemblers);
     };
 
-    // Use direct onclick for maximum reliability
-    if (refs.btnCollectScrap) {
-        refs.btnCollectScrap.onclick = () => {
-            state.scrap++;
+    // Economy Logic
+    refs.btnCollectScrap.onclick = () => {
+        state.scrap++;
+        state.money += 2; // Collection fee
+        save();
+        syncUI();
+    };
+
+    refs.btnBuildShip.onclick = () => {
+        if (state.scrap >= 5) {
+            state.scrap -= 5;
+            state.ships++;
             save();
             syncUI();
-        };
-    }
+        }
+    };
 
-    if (refs.btnBuildShip) {
-        refs.btnBuildShip.onclick = () => {
-            if (state.scrap >= 10) {
-                state.scrap -= 10;
-                state.ships++;
-                save();
-                syncUI();
-            }
-        };
-    }
+    refs.btnForgeGW.onclick = () => {
+        if (state.ships >= 3) {
+            state.ships -= 3;
+            state.gateways++;
+            save();
+            syncUI();
+            notify('New Ingress Gateway Forged!');
+        }
+    };
 
-    if (refs.btnForgeGW) {
-        refs.btnForgeGW.onclick = () => {
-            if (state.ships >= 5) {
-                state.ships -= 5;
-                state.gateways++;
-                save();
-                syncUI();
-                notify('New Ingress Gateway Forged!');
-            }
-        };
-    }
+    refs.btnSellGW.onclick = () => {
+        if (state.gateways >= 1) {
+            state.gateways--;
+            state.money += 500;
+            save();
+            syncUI();
+            notify('Sold Gateway to the Federation! +$500');
+        }
+    };
 
-    if (refs.btnAutoScrapper) {
-        refs.btnAutoScrapper.onclick = () => {
-            if (state.scrap >= 50) {
-                state.scrap -= 50;
-                state.autoScrappers++;
-                save();
-                syncUI();
-            }
-        };
-    }
+    refs.btnAutoScrapper.onclick = () => {
+        if (state.money >= 100) {
+            state.money -= 100;
+            state.autoScrappers++;
+            save();
+            syncUI();
+        }
+    };
 
-    if (refs.btnAutoAssembler) {
-        refs.btnAutoAssembler.onclick = () => {
-            if (state.ships >= 20) {
-                state.ships -= 20;
-                state.autoAssemblers++;
-                save();
-                syncUI();
-            }
-        };
-    }
+    refs.btnAutoAssembler.onclick = () => {
+        if (state.money >= 500) {
+            state.money -= 500;
+            state.autoAssemblers++;
+            save();
+            syncUI();
+        }
+    };
 
+    // Game Loop
     setInterval(() => {
         let changed = false;
         if (state.autoScrappers > 0) {
@@ -144,10 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
             changed = true;
         }
         if (state.autoAssemblers > 0) {
-            const potential = Math.floor(state.scrap / 10);
+            const potential = Math.floor(state.scrap / 5);
             const toBuild = Math.min(potential, state.autoAssemblers);
             if (toBuild > 0) {
-                state.scrap -= (toBuild * 10);
+                state.scrap -= (toBuild * 5);
                 state.ships += toBuild;
                 changed = true;
             }
@@ -158,52 +167,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
-    if (refs.btnInject) {
-        refs.btnInject.onclick = () => {
-            state.packets++;
-            syncUI();
-            const p = document.createElement('div');
-            p.className = 'packet';
-            p.style.left = '0%';
-            p.style.top = Math.random() * 90 + '%';
-            refs.simCanvas.appendChild(p);
-            const a = p.animate([
-                { left: '0%', opacity: 1 },
-                { left: '40%', opacity: 1, filter: 'blur(0px)' },
-                { left: '60%', opacity: 0.5, filter: 'blur(10px)', scale: '1.5' },
-                { left: '100%', opacity: 1, filter: 'blur(0px)', scale: '1' }
-            ], { duration: 1500, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
-            a.onfinish = () => p.remove();
-        };
-    }
+    // Inspector
+    refs.btnInject.onclick = () => {
+        state.packets++;
+        syncUI();
+        const p = document.createElement('div');
+        p.className = 'packet';
+        p.style.left = '0%';
+        p.style.top = Math.random() * 90 + '%';
+        refs.simCanvas.appendChild(p);
+        p.animate([
+            { left: '0%', opacity: 1 },
+            { left: '100%', opacity: 1 }
+        ], { duration: 1500 }).onfinish = () => p.remove();
+    };
 
-    if (refs.btnStar) {
-        refs.btnStar.onclick = () => {
-            state.stars++;
+    // Hall of Fame
+    refs.btnStar.onclick = () => {
+        state.stars++;
+        save();
+        syncUI();
+    };
+
+    refs.btnPost.onclick = () => {
+        const val = refs.logInput.value.trim();
+        if (val) {
+            state.logs.push(val);
+            refs.logInput.value = '';
             save();
             syncUI();
-        };
-    }
+        }
+    };
 
-    if (refs.btnPost) {
-        refs.btnPost.onclick = () => {
-            const val = refs.logInput.value.trim();
-            if (val) {
-                state.logs.push(val);
-                refs.logInput.value = '';
-                save();
-                syncUI();
-            }
-        };
-    }
-
-    if (refs.attestCheck) {
-        refs.attestCheck.onchange = (e) => {
-            state.attested = e.target.checked;
-            save();
-            if (state.attested) notify('Orbital Parity Achieved');
-        };
-    }
+    refs.attestCheck.onchange = (e) => {
+        state.attested = e.target.checked;
+        save();
+        if (state.attested) notify('Orbital Parity Achieved');
+    };
 
     const notify = (msg) => {
         const div = document.createElement('div');

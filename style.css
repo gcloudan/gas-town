@@ -2,6 +2,7 @@
 :root {
     --primary: #1890ff;
     --primary-hover: #40a9ff;
+    --success: #52c41a;
     --text: rgba(0, 0, 0, 0.85);
     --text-sec: rgba(0, 0, 0, 0.45);
     --border: #f0f0f0;
@@ -79,7 +80,7 @@ body {
 /* Content Area */
 .ant-content {
     flex: 1;
-    padding: 40px 0 80px 0; /* Extra bottom padding */
+    padding: 40px 0 80px 0;
 }
 
 /* Hero Section */
@@ -293,6 +294,10 @@ body {
     justify-content: space-between;
 }
 
+.money-highlight {
+    border: 2px solid var(--success) !important;
+}
+
 .stat-label {
     font-weight: 600;
     color: var(--text-sec);
@@ -303,6 +308,10 @@ body {
     color: var(--primary);
     font-family: monospace;
     font-size: 1.1rem;
+}
+
+.money-highlight .stat-value {
+    color: var(--success);
 }
 
 .shipyard-actions, .shipyard-upgrades {
@@ -452,7 +461,7 @@ body {
 
 /* Footer */
 .ant-footer {
-    padding: 64px 0;
+    padding: 48px 0;
     background: #fafafa;
     border-top: 1px solid var(--border);
     text-align: center;
