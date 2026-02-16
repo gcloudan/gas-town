@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Istio Space Station | Orbital Traffic Control</title>
+    <title>Istio Space Station | Ingress Migration</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=32&auto=format&fit=crop" type="image/x-icon">
 </head>
@@ -15,7 +15,7 @@
                 <div class="ant-logo">ISTIO SPACE STATION</div>
             </div>
             <nav class="ant-nav">
-                <a href="#motivation" class="ant-nav-link">Motivation</a>
+                <a href="#why-istio" class="ant-nav-link">Why Istio</a>
                 <a href="#architecture" class="ant-nav-link">Architecture</a>
                 <a href="#inspector" class="ant-nav-link">Inspector</a>
                 <a href="#shipyard" class="ant-nav-link">Shipyard</a>
@@ -29,38 +29,38 @@
             <div class="hero-section">
                 <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1200&auto=format&fit=crop" alt="Space Station Header" class="hero-image">
                 <div class="hero-content">
-                    <h1 class="ant-title">🚀 Orbital Traffic Management</h1>
+                    <h1 class="ant-title">🚀 Istio Ingress Gateway Migration</h1>
                     <div class="ant-psa">
                         <span class="ant-tag-red">CRITICAL PSA</span>
-                        <span class="psa-text">Legacy Ingress Controllers reach <strong>EOL in March 2026</strong>. Relocation to Istio Space Station is mandatory.</span>
+                        <span class="psa-text">Traditional Ingress controllers reach <strong>End of Life in March 2026</strong>. Relocate to the Istio Space Station now.</span>
                     </div>
                 </div>
             </div>
 
-            <section id="motivation" class="ant-card">
-                <div class="ant-card-head">The Evolution: Why the Station?</div>
+            <section id="why-istio" class="ant-card">
+                <div class="ant-card-head">The Evolution: Why Istio Ingress Gateway?</div>
                 <div class="ant-card-body">
                     <p class="hero-text">Moving beyond NGINX Ingress is like upgrading from a reliable sedan to a futuristic starship. Here's why Istio wins:</p>
                     <div class="feature-grid">
                         <div class="feature-card">
                             <div class="feature-icon">🛰️</div>
-                            <h4>Unified Control</h4>
-                            <p>Single point of management for security and traffic.</p>
+                            <h4>Unified Control Plane</h4>
+                            <p>Manage security, traffic, and observability in one place.</p>
                         </div>
                         <div class="feature-card">
                             <div class="feature-icon">⚡</div>
-                            <h4>Advanced Steering</h4>
-                            <p>Native support for Canary and Blue/Green.</p>
+                            <h4>Advanced Traffic Steering</h4>
+                            <p>Canary deployments, mirroring, and circuit breaking are first-class citizens.</p>
                         </div>
                         <div class="feature-card">
                             <div class="feature-icon">🛡️</div>
                             <h4>mTLS Everywhere</h4>
-                            <p>Built-in zero-trust encryption.</p>
+                            <p>Zero-trust networking is built-in, not bolted on.</p>
                         </div>
                         <div class="feature-card">
                             <div class="feature-icon">👁️</div>
-                            <h4>L7 Observability</h4>
-                            <p>Deep request insights without sidecar injection.</p>
+                            <h4>Observability</h4>
+                            <p>Deep insights into every request without changing your app code.</p>
                         </div>
                     </div>
                 </div>
@@ -173,12 +173,12 @@
                         </div>
                         <div class="shipyard-actions">
                             <button id="btn-collect-scrap" class="ant-btn-primary">Collect Scrap Metal</button>
-                            <button id="btn-build-ship" class="ant-btn-ghost" disabled>Assemble Spaceship (10 Scrap)</button>
-                            <button id="btn-forge-gw" class="ant-btn-ghost" disabled>Forge Gateway (5 Ships)</button>
+                            <button id="btn-build-ship" class="ant-btn-ghost">Assemble Spaceship (10 Scrap)</button>
+                            <button id="btn-forge-gw" class="ant-btn-ghost">Forge Gateway (5 Ships)</button>
                         </div>
                         <div class="shipyard-upgrades">
-                            <button id="btn-auto-scrapper" class="ant-btn-ghost" disabled>Auto-Scrapper (50 Scrap)</button>
-                            <button id="btn-auto-assembler" class="ant-btn-ghost" disabled>Auto-Assembler (20 Ships)</button>
+                            <button id="btn-auto-scrapper" class="ant-btn-ghost">Auto-Scrapper (50 Scrap)</button>
+                            <button id="btn-auto-assembler" class="ant-btn-ghost">Auto-Assembler (20 Ships)</button>
                         </div>
                     </div>
                 </div>

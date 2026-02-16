@@ -1,22 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_v2';
+    const KEY = 'istio_station_v3';
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
         attested: localStorage.getItem(KEY + '_attested') === 'true',
-        // Shipyard State
         scrap: parseInt(localStorage.getItem(KEY + '_scrap') || '0'),
         ships: parseInt(localStorage.getItem(KEY + '_ships') || '0'),
         gateways: parseInt(localStorage.getItem(KEY + '_gateways') || '0'),
         autoScrappers: parseInt(localStorage.getItem(KEY + '_auto_scrappers') || '0'),
         autoAssemblers: parseInt(localStorage.getItem(KEY + '_auto_assemblers') || '0'),
-        // Traffic State
         packets: 0
     };
 
-    // 2. Elements
-    const nodes = {
+    const refs = {
         starCount: document.getElementById('star-count'),
         starField: document.getElementById('star-field'),
         logInput: document.getElementById('log-input'),
@@ -24,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnStar: document.getElementById('btn-star'),
         attestCheck: document.getElementById('attest-check'),
         timeline: document.getElementById('timeline'),
-        // Shipyard Nodes
         scrapCount: document.getElementById('scrap-count'),
         shipCount: document.getElementById('ship-count'),
         gwCount: document.getElementById('gw-count'),
@@ -33,52 +29,47 @@ document.addEventListener('DOMContentLoaded', () => {
         btnForgeGW: document.getElementById('btn-forge-gw'),
         btnAutoScrapper: document.getElementById('btn-auto-scrapper'),
         btnAutoAssembler: document.getElementById('btn-auto-assembler'),
-        // Inspector Nodes
         btnInject: document.getElementById('btn-inject'),
         packetCount: document.getElementById('packet-count'),
         simCanvas: document.getElementById('sim-canvas')
     };
 
-    // 3. UI Sync
-    const sync = () => {
-        // Hall of Fame
-        if (nodes.starCount) nodes.starCount.textContent = state.stars.toLocaleString();
-        if (nodes.starField) {
-            nodes.starField.innerHTML = '';
+    const syncUI = () => {
+        if (refs.starCount) refs.starCount.textContent = state.stars.toLocaleString();
+        if (refs.starField) {
+            refs.starField.innerHTML = '';
             const limit = Math.min(state.stars, 60);
             for (let i = 0; i < limit; i++) {
                 const s = document.createElement('span');
                 s.textContent = '⭐';
                 s.style.animation = 'pop 0.3s forwards';
-                nodes.starField.appendChild(s);
+                refs.starField.appendChild(s);
             }
         }
-        if (nodes.timeline) {
-            nodes.timeline.innerHTML = '';
+        if (refs.timeline) {
+            refs.timeline.innerHTML = '';
             [...state.logs].reverse().forEach(text => {
                 const div = document.createElement('div');
                 div.className = 'timeline-item';
                 div.textContent = text;
-                nodes.timeline.appendChild(div);
+                refs.timeline.appendChild(div);
             });
         }
-        if (nodes.attestCheck) nodes.attestCheck.checked = state.attested;
+        if (refs.attestCheck) refs.attestCheck.checked = state.attested;
 
-        // Shipyard
-        if (nodes.scrapCount) nodes.scrapCount.textContent = state.scrap.toLocaleString();
-        if (nodes.shipCount) nodes.shipCount.textContent = state.ships.toLocaleString();
-        if (nodes.gwCount) nodes.gwCount.textContent = state.gateways.toLocaleString();
+        if (refs.scrapCount) refs.scrapCount.textContent = state.scrap.toLocaleString();
+        if (refs.shipCount) refs.shipCount.textContent = state.ships.toLocaleString();
+        if (refs.gwCount) refs.gwCount.textContent = state.gateways.toLocaleString();
 
-        nodes.btnBuildShip.disabled = state.scrap < 10;
-        nodes.btnForgeGW.disabled = state.ships < 5;
-        nodes.btnAutoScrapper.disabled = state.scrap < 50;
-        nodes.btnAutoAssembler.disabled = state.ships < 20;
+        if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 10;
+        if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 5;
+        if (refs.btnAutoScrapper) refs.btnAutoScrapper.disabled = state.scrap < 50;
+        if (refs.btnAutoAssembler) refs.btnAutoAssembler.disabled = state.ships < 20;
 
-        nodes.btnAutoScrapper.textContent = `Auto-Scrapper (${state.autoScrappers}) - 50 Scrap`;
-        nodes.btnAutoAssembler.textContent = `Auto-Assembler (${state.autoAssemblers}) - 20 Ships`;
+        if (refs.btnAutoScrapper) refs.btnAutoScrapper.textContent = `Auto-Scrapper (${state.autoScrappers}) - 50 Scrap`;
+        if (refs.btnAutoAssembler) refs.btnAutoAssembler.textContent = `Auto-Assembler (${state.autoAssemblers}) - 20 Ships`;
 
-        // Inspector
-        if (nodes.packetCount) nodes.packetCount.textContent = state.packets.toLocaleString();
+        if (refs.packetCount) refs.packetCount.textContent = state.packets.toLocaleString();
     };
 
     const save = () => {
@@ -92,67 +83,59 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_auto_assemblers', state.autoAssemblers);
     };
 
-    // 4. Traffic Simulator (Inspector) Logic
-    const injectPacket = () => {
-        state.packets++;
-        sync();
-        const packet = document.createElement('div');
-        packet.className = 'packet';
-        packet.style.left = '0%';
-        packet.style.top = Math.random() * 90 + '%';
-        nodes.simCanvas.appendChild(packet);
-        const anim = packet.animate([
-            { left: '0%', opacity: 1 },
-            { left: '40%', opacity: 1, filter: 'blur(0px)' },
-            { left: '60%', opacity: 0.5, filter: 'blur(10px)', scale: '1.5' },
-            { left: '100%', opacity: 1, filter: 'blur(0px)', scale: '1' }
-        ], { duration: 1500, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
-        anim.onfinish = () => packet.remove();
-    };
-
-    // 5. Idle Game Logic
-    nodes.btnCollectScrap.onclick = () => {
-        state.scrap++;
-        save();
-        sync();
-    };
-
-    nodes.btnBuildShip.onclick = () => {
-        if (state.scrap >= 10) {
-            state.scrap -= 10;
-            state.ships++;
+    // Idle Game
+    if (refs.btnCollectScrap) {
+        refs.btnCollectScrap.addEventListener('click', () => {
+            state.scrap++;
             save();
-            sync();
-        }
-    };
+            syncUI();
+        });
+    }
 
-    nodes.btnForgeGW.onclick = () => {
-        if (state.ships >= 5) {
-            state.ships -= 5;
-            state.gateways++;
-            save();
-            sync();
-            notify('New Ingress Gateway Forged!');
-        }
-    };
+    if (refs.btnBuildShip) {
+        refs.btnBuildShip.addEventListener('click', () => {
+            if (state.scrap >= 10) {
+                state.scrap -= 10;
+                state.ships++;
+                save();
+                syncUI();
+            }
+        });
+    }
 
-    nodes.btnAutoScrapper.onclick = () => {
-        if (state.scrap >= 50) {
-            state.scrap -= 50;
-            state.autoScrappers++;
-            save();
-            sync();
-        }
-    };
+    if (refs.btnForgeGW) {
+        refs.btnForgeGW.addEventListener('click', () => {
+            if (state.ships >= 5) {
+                state.ships -= 5;
+                state.gateways++;
+                save();
+                syncUI();
+                notify('New Ingress Gateway Forged!');
+            }
+        });
+    }
 
-    nodes.btnAutoAssembler.onclick = () => {
-        if (state.ships >= 20) {
-            state.ships -= 20;
-            state.autoAssemblers++;
-            save();
-            sync();
-        }
-    };
+    if (refs.btnAutoScrapper) {
+        refs.btnAutoScrapper.addEventListener('click', () => {
+            if (state.scrap >= 50) {
+                state.scrap -= 50;
+                state.autoScrappers++;
+                save();
+                syncUI();
+            }
+        });
+    }
+
+    if (refs.btnAutoAssembler) {
+        refs.btnAutoAssembler.addEventListener('click', () => {
+            if (state.ships >= 20) {
+                state.ships -= 20;
+                state.autoAssemblers++;
+                save();
+                syncUI();
+            }
+        });
+    }
 
     setInterval(() => {
         let changed = false;
@@ -171,40 +154,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (changed) {
             save();
-            sync();
+            syncUI();
         }
     }, 1000);
 
-    // 6. Hall of Fame Handlers
-    nodes.btnStar.onclick = () => {
-        state.stars++;
-        save();
-        sync();
-    };
-
-    nodes.btnPost.onclick = () => {
-        const val = nodes.logInput.value.trim();
-        if (val) {
-            state.logs.push(val);
-            nodes.logInput.value = '';
-            save();
-            sync();
-        }
-    };
-
-    nodes.attestCheck.onchange = (e) => {
-        state.attested = e.target.checked;
-        save();
-        if (state.attested) {
-            notify('Link Established: Station Docking Confirmed');
-        }
-    };
-
-    if (nodes.btnInject) {
-        nodes.btnInject.onclick = injectPacket;
+    // Inspector
+    if (refs.btnInject) {
+        refs.btnInject.addEventListener('click', () => {
+            state.packets++;
+            syncUI();
+            const p = document.createElement('div');
+            p.className = 'packet';
+            p.style.left = '0%';
+            p.style.top = Math.random() * 90 + '%';
+            refs.simCanvas.appendChild(p);
+            const a = p.animate([
+                { left: '0%', opacity: 1 },
+                { left: '40%', opacity: 1, filter: 'blur(0px)' },
+                { left: '60%', opacity: 0.5, filter: 'blur(10px)', scale: '1.5' },
+                { left: '100%', opacity: 1, filter: 'blur(0px)', scale: '1' }
+            ], { duration: 1500, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
+            a.onfinish = () => p.remove();
+        });
     }
 
-    // 7. Global Feedback
+    // Hall of Fame
+    if (refs.btnStar) {
+        refs.btnStar.addEventListener('click', () => {
+            state.stars++;
+            save();
+            syncUI();
+        });
+    }
+
+    if (refs.btnPost) {
+        refs.btnPost.addEventListener('click', () => {
+            const val = refs.logInput.value.trim();
+            if (val) {
+                state.logs.push(val);
+                refs.logInput.value = '';
+                save();
+                syncUI();
+            }
+        });
+    }
+
+    if (refs.attestCheck) {
+        refs.attestCheck.addEventListener('change', (e) => {
+            state.attested = e.target.checked;
+            save();
+            if (state.attested) notify('Orbital Parity Achieved');
+        });
+    }
+
     const notify = (msg) => {
         const div = document.createElement('div');
         div.style.cssText = `
@@ -218,14 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => div.remove(), 4000);
     };
 
-    // 8. Animations
-    const style = document.createElement('style');
-    style.innerHTML = `
-        @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    `;
-    document.head.appendChild(style);
-
-    // Initial Sync
-    sync();
+    // Initial
+    syncUI();
 });
