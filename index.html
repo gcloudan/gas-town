@@ -3,103 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Istio Ingress: The Evolution of Traffic</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI&display=swap" rel="stylesheet">
+    <title>Istio Ingress Gateway Migration</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div id="app-container">
-        <nav class="ant-nav">
-            <div class="nav-content">
-                <span class="logo">ISTIO VANGUARD</span>
-                <div class="nav-links">
-                    <a href="#why-istio">Motivation</a>
-                    <a href="#gateways">Architecture</a>
-                    <a href="#hall-of-fame">Hall of Fame</a>
-                </div>
-            </div>
-        </nav>
-
-        <header class="ant-header">
-            <div class="header-content">
-                <h1>🚀 NGINX Ingress to Istio Ingress</h1>
-                <p class="subtitle">A Fun Guide to Modern Traffic Management</p>
+<body class="ant-layout">
+    <div id="ant-root">
+        <header class="ant-layout-header">
+            <div class="header-inner">
+                <div class="ant-logo">VANGUARD</div>
+                <ul class="ant-menu">
+                    <li class="ant-menu-item">Dashboard</li>
+                    <li class="ant-menu-item">Documentation</li>
+                </ul>
             </div>
         </header>
 
-        <main class="ant-main">
-            <section id="why-istio" class="ant-section">
-                <div class="ant-card">
-                    <div class="ant-card-head">Why Istio Ingress?</div>
-                    <div class="ant-card-body">
-                        <p>Moving beyond NGINX Ingress is like upgrading from a reliable sedan to a futuristic starship. Here's why Istio wins:</p>
-                        <ul class="ant-list">
-                            <li><strong>Unified Control Plane:</strong> Manage security, traffic, and observability in one place.</li>
-                            <li><strong>Advanced Traffic Steering:</strong> Canary deployments, mirroring, and circuit breaking are first-class citizens.</li>
-                            <li><strong>mTLS Everywhere:</strong> Zero-trust networking is built-in, not bolted on.</li>
-                            <li><strong>Observability:</strong> Deep insights into every request without changing your app code.</li>
-                        </ul>
+        <main class="ant-layout-content">
+            <div class="page-header">
+                <h1 class="ant-typography">🚀 Istio Ingress Gateway Migration</h1>
+                <p class="psa-subtitle">PSA: Traditional Ingress controllers are now legacy. Accelerate your transition to Istio Ingress Gateway for modern traffic management.</p>
+            </div>
+
+            <div class="ant-row">
+                <div class="ant-col">
+                    <div class="ant-card">
+                        <div class="ant-card-head">The Evolution: Why Istio Ingress Gateway?</div>
+                        <div class="ant-card-body">
+                            <p>Moving beyond NGINX Ingress is like upgrading from a reliable sedan to a futuristic starship. Here's why Istio wins:</p>
+                            <ul class="ant-list">
+                                <li class="ant-list-item"><strong>Unified Control Plane:</strong> Manage security, traffic, and observability in one place.</li>
+                                <li class="ant-list-item"><strong>Advanced Traffic Steering:</strong> Canary deployments, mirroring, and circuit breaking are first-class citizens.</li>
+                                <li class="ant-list-item"><strong>mTLS Everywhere:</strong> Zero-trust networking is built-in, not bolted on.</li>
+                                <li class="ant-list-item"><strong>Observability:</strong> Deep insights into every request without changing your app code.</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section id="gateways" class="ant-section">
-                <div class="ant-card">
-                    <div class="ant-card-head">Shared vs. Dedicated Gateways</div>
-                    <div class="ant-card-body">
-                        <div class="comparison-grid">
-                            <div class="comp-col">
-                                <h3>Shared Gateways</h3>
-                                <p>One Gateway to rule them all. Best for small clusters or when cost is a primary concern.</p>
-                                <p><strong>Pros:</strong> Lower resource overhead, simpler initial setup.</p>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="comp-col">
-                                <h3>Dedicated Gateways</h3>
-                                <p>A Gateway for every team or application. Best for high-traffic apps and strict isolation.</p>
-                                <p><strong>Pros:</strong> Better blast radius control, independent scaling, team autonomy.</p>
+            <div class="ant-row" style="margin-top: 24px;">
+                <div class="ant-col">
+                    <div class="ant-card">
+                        <div class="ant-card-head">Architectural Strategy: Shared vs. Dedicated</div>
+                        <div class="ant-card-body">
+                            <div class="ant-comparison">
+                                <div class="comp-pane">
+                                    <h3>Shared Gateways</h3>
+                                    <p>One Gateway to rule them all. Best for small clusters or when cost is a primary concern.</p>
+                                    <p class="tag">Efficiency</p>
+                                </div>
+                                <div class="comp-pane pane-border">
+                                    <h3>Dedicated Gateways</h3>
+                                    <p>A Gateway for every team or application. Best for high-traffic apps and strict isolation.</p>
+                                    <p class="tag">Security</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section id="hall-of-fame" class="ant-section">
-                <div class="ant-card">
-                    <div class="ant-card-head">Migration Hall of Fame</div>
-                    <div class="ant-card-body">
-                        <div class="stats-bar">
-                            <span id="star-count-display">0 Stars Awarded</span>
-                        </div>
-                        
-                        <div id="star-field" class="ant-star-field"></div>
-
-                        <div class="ant-form">
-                            <div class="ant-input-group">
-                                <input type="text" id="user-comment" class="ant-input" placeholder="Transmission log: Share your migration story...">
-                                <button id="btn-post" class="ant-btn ant-btn-primary">Post Update</button>
+            <div class="ant-row" style="margin-top: 24px;">
+                <div class="ant-col">
+                    <div class="ant-card">
+                        <div class="ant-card-head">Migration Hall of Fame</div>
+                        <div class="ant-card-body">
+                            <div class="stats-area">
+                                <span id="stars-total" class="ant-badge">0 Stars Awarded</span>
                             </div>
                             
-                            <div class="ant-footer-controls">
-                                <label class="ant-checkbox-wrapper">
-                                    <input type="checkbox" id="migration-check" class="ant-checkbox">
-                                    <span>I attest that I have successfully migrated to Istio Ingress!</span>
-                                </label>
-                                <button id="btn-star" class="ant-btn ant-btn-default">✨ Add Star of Success</button>
-                            </div>
-                        </div>
+                            <div id="star-container" class="star-canvas"></div>
 
-                        <div id="comments-list" class="ant-timeline">
-                            <!-- Logs will be injected here -->
+                            <div class="ant-form-item">
+                                <div class="ant-input-search">
+                                    <input type="text" id="log-input" class="ant-input" placeholder="Transmit migration status...">
+                                    <button id="btn-transmit" class="ant-btn ant-btn-primary">Transmit</button>
+                                </div>
+                            </div>
+
+                            <div class="ant-form-extra">
+                                <label class="ant-checkbox-wrapper">
+                                    <input type="checkbox" id="check-attest" class="ant-checkbox">
+                                    <span>I attest that I have successfully migrated to Istio Ingress Gateway!</span>
+                                </label>
+                                <button id="btn-award-star" class="ant-btn">✨ Award Star</button>
+                            </div>
+
+                            <div id="logs-timeline" class="ant-timeline">
+                                <!-- Logs will appear here -->
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
         </main>
 
-        <footer class="ant-footer">
+        <footer class="ant-layout-footer">
             Istio Vanguard ©2026 Engineering Operations
         </footer>
     </div>
