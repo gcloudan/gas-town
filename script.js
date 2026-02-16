@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_v3';
+    const KEY = 'istio_station_final_v1';
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -83,28 +83,28 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_auto_assemblers', state.autoAssemblers);
     };
 
-    // Idle Game
+    // Use direct onclick for maximum reliability
     if (refs.btnCollectScrap) {
-        refs.btnCollectScrap.addEventListener('click', () => {
+        refs.btnCollectScrap.onclick = () => {
             state.scrap++;
             save();
             syncUI();
-        });
+        };
     }
 
     if (refs.btnBuildShip) {
-        refs.btnBuildShip.addEventListener('click', () => {
+        refs.btnBuildShip.onclick = () => {
             if (state.scrap >= 10) {
                 state.scrap -= 10;
                 state.ships++;
                 save();
                 syncUI();
             }
-        });
+        };
     }
 
     if (refs.btnForgeGW) {
-        refs.btnForgeGW.addEventListener('click', () => {
+        refs.btnForgeGW.onclick = () => {
             if (state.ships >= 5) {
                 state.ships -= 5;
                 state.gateways++;
@@ -112,29 +112,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 syncUI();
                 notify('New Ingress Gateway Forged!');
             }
-        });
+        };
     }
 
     if (refs.btnAutoScrapper) {
-        refs.btnAutoScrapper.addEventListener('click', () => {
+        refs.btnAutoScrapper.onclick = () => {
             if (state.scrap >= 50) {
                 state.scrap -= 50;
                 state.autoScrappers++;
                 save();
                 syncUI();
             }
-        });
+        };
     }
 
     if (refs.btnAutoAssembler) {
-        refs.btnAutoAssembler.addEventListener('click', () => {
+        refs.btnAutoAssembler.onclick = () => {
             if (state.ships >= 20) {
                 state.ships -= 20;
                 state.autoAssemblers++;
                 save();
                 syncUI();
             }
-        });
+        };
     }
 
     setInterval(() => {
@@ -158,9 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
-    // Inspector
     if (refs.btnInject) {
-        refs.btnInject.addEventListener('click', () => {
+        refs.btnInject.onclick = () => {
             state.packets++;
             syncUI();
             const p = document.createElement('div');
@@ -175,20 +174,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 { left: '100%', opacity: 1, filter: 'blur(0px)', scale: '1' }
             ], { duration: 1500, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' });
             a.onfinish = () => p.remove();
-        });
+        };
     }
 
-    // Hall of Fame
     if (refs.btnStar) {
-        refs.btnStar.addEventListener('click', () => {
+        refs.btnStar.onclick = () => {
             state.stars++;
             save();
             syncUI();
-        });
+        };
     }
 
     if (refs.btnPost) {
-        refs.btnPost.addEventListener('click', () => {
+        refs.btnPost.onclick = () => {
             const val = refs.logInput.value.trim();
             if (val) {
                 state.logs.push(val);
@@ -196,15 +194,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 save();
                 syncUI();
             }
-        });
+        };
     }
 
     if (refs.attestCheck) {
-        refs.attestCheck.addEventListener('change', (e) => {
+        refs.attestCheck.onchange = (e) => {
             state.attested = e.target.checked;
             save();
             if (state.attested) notify('Orbital Parity Achieved');
-        });
+        };
     }
 
     const notify = (msg) => {
@@ -220,6 +218,5 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => div.remove(), 4000);
     };
 
-    // Initial
     syncUI();
 });
