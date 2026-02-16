@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_economy_v2';
+    const KEY = 'istio_station_economy_v3';
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -92,8 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Economy Logic
     if (refs.btnCollectScrap) {
         refs.btnCollectScrap.onclick = () => {
-            state.scrap += 2; // Buffed
-            state.money += 10; // Buffed
+            state.scrap += 2;
+            state.money += 10;
             save();
             syncUI();
         };
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnSellGW.onclick = () => {
             if (state.gateways >= 1) {
                 state.gateways--;
-                state.money += 1000; // Buffed
+                state.money += 1000;
                 save();
                 syncUI();
                 notify('Sold Gateway to the Federation! +$1,000');
