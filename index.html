@@ -32,7 +32,7 @@
                     <h1 class="ant-title">🚀 Istio Ingress Gateway Migration</h1>
                     <div class="ant-psa">
                         <span class="ant-tag-red">CRITICAL PSA</span>
-                        <span class="psa-text">Traditional Ingress controllers reach <strong>End of Life in March 2026</strong>. Relocation to the Istio Space Station now.</span>
+                        <span class="psa-text">Traditional Ingress controllers reach <strong>End of Life in March 2026</strong>. Relocate to the Istio Space Station now.</span>
                     </div>
                 </div>
             </div>
@@ -69,10 +69,10 @@
             <section id="architecture" class="ant-card">
                 <div class="ant-card-head">Architectural Patterns: Shared vs. Dedicated</div>
                 <div class="ant-card-body">
+                    <p>The choice between shared and dedicated gateways defines your operational complexity and blast radius.</p>
                     <div class="arch-container">
                         <div class="arch-pane">
-                            <h3>Shared Ingress Gateway</h3>
-                            <p class="arch-desc">Standardized multi-tenant ingress cluster.</p>
+                            <div class="arch-desc">Shared Ingress Gateway</div>
                             <ul class="arch-features">
                                 <li>Resource optimized (one NLB)</li>
                                 <li>Centralized policy management</li>
@@ -101,8 +101,7 @@
                             </div>
                         </div>
                         <div class="arch-pane border-left">
-                            <h3>Dedicated Ingress Gateway</h3>
-                            <p class="arch-desc">Sovereign gateway per application/team.</p>
+                            <div class="arch-desc">Dedicated Ingress Gateway</div>
                             <ul class="arch-features">
                                 <li>Total blast radius isolation</li>
                                 <li>Independent scaling and cycles</li>
@@ -184,9 +183,10 @@
                 </div>
             </section>
 
-            <div id="hall-of-fame" class="ant-card">
+            <section id="hall-of-fame" class="ant-card">
                 <div class="ant-card-head">Station Hall of Fame</div>
                 <div class="ant-card-body">
+                    <p>Have you reached the station? Document your frequency and leave your mark.</p>
                     <div class="fame-header">
                         <div class="ant-stat">
                             <div class="ant-stat-title">Station Dockings</div>
@@ -213,7 +213,7 @@
                         <!-- Injected logs -->
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </main>
 
