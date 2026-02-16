@@ -3,14 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Istio Warp: Beyond Ingress</title>
+    <title>The Istio Vanguard | Migration Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-mode">
-    <div id="canvas-container"></div>
-    <main id="app">
-        <!-- Content injected by JS -->
+<body class="theme-obsidian">
+    <div id="grain-overlay"></div>
+    <div id="ambient-light"></div>
+    
+    <main class="content-wrapper">
+        <header class="vanguard-header">
+            <div class="badge-container">
+                <span class="status-badge">Phase: Production Ready</span>
+            </div>
+            <h1 class="glitch-text" data-text="ISTIO VANGUARD">ISTIO VANGUARD</h1>
+            <p class="hero-sub">The definitive shift from NGINX to Service Mesh excellence.</p>
+        </header>
+
+        <section class="intel-grid">
+            <div class="intel-card">
+                <div class="card-icon">🛰️</div>
+                <h3>The Strategic Pivot</h3>
+                <p>NGINX handles entry. Istio handles <em>existence</em>. mTLS by default, automated retries, and traffic shadowing that empowers engineering teams without overhead.</p>
+            </div>
+            <div class="intel-card">
+                <div class="card-icon">⚡</div>
+                <h3>Deployment Sovereignty</h3>
+                <p><strong>Shared Gateways:</strong> Maximize utilization, minimize footprint. <br><strong>Dedicated Gateways:</strong> Total isolation. Separate teams, separate blast radii, separate fate.</p>
+            </div>
+        </section>
+
+        <section class="ops-center">
+            <div class="glass-module">
+                <div class="module-header">
+                    <h2>Migration Command Center</h2>
+                    <div id="star-count-badge" class="counter-badge">0 Stars</div>
+                </div>
+
+                <div class="star-field-interactive" id="star-field">
+                    <!-- Dynamic Stars -->
+                </div>
+
+                <div class="command-input-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="comm-input" placeholder="Enter migration log entry..." autocomplete="off">
+                    </div>
+                    <div class="button-array">
+                        <button id="action-star" class="vanguard-btn primary">
+                            <span class="btn-text">Award Star</span>
+                            <span class="btn-glow"></span>
+                        </button>
+                        <button id="action-transmit" class="vanguard-btn secondary">
+                            <span class="btn-text">Transmit Log</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="attestation-toggle">
+                    <label class="switch">
+                        <input type="checkbox" id="vanguard-check">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">I have achieved Ingress Convergence</span>
+                </div>
+
+                <div id="log-wall" class="log-wall">
+                    <!-- Log entries -->
+                </div>
+            </div>
+        </section>
     </main>
+
     <script src="script.js"></script>
 </body>
 </html>
