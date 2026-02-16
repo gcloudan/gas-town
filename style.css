@@ -142,7 +142,7 @@ body {
     background: white;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    margin-bottom: 48px; /* Increased card margin */
+    margin-bottom: 48px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -158,12 +158,12 @@ body {
 }
 
 .ant-card-body {
-    padding: 32px 24px; /* Increased body padding */
+    padding: 32px 24px;
 }
 
 .ant-card-body p {
     margin-top: 0;
-    margin-bottom: 24px; /* Increased paragraph margin */
+    margin-bottom: 24px;
 }
 
 /* Features */
@@ -319,6 +319,56 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+.upgrade-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+
+.upgrade-name {
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.upgrade-count {
+    min-width: 30px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.ant-btn-group {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    align-items: center;
+}
+
+.ant-btn-small {
+    background: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.ant-btn-small:hover:not(:disabled) {
+    background: #e6f7ff;
+    color: var(--primary);
+}
+
+.ant-btn-small:disabled {
+    color: #d9d9d9;
+    cursor: not-allowed;
 }
 
 /* Hall of Fame */

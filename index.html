@@ -181,8 +181,22 @@
                             <button id="btn-sell-gw" class="ant-btn-primary" style="background:#52c41a; border-color:#52c41a;">Sell Gateway (+$1,000)</button>
                         </div>
                         <div class="shipyard-upgrades">
-                            <button id="btn-auto-scrapper" class="ant-btn-ghost">Auto-Scrapper ($50)</button>
-                            <button id="btn-auto-assembler" class="ant-btn-ghost">Auto-Assembler ($200)</button>
+                            <div class="upgrade-row">
+                                <span class="upgrade-name">Auto-Scrapper ($50)</span>
+                                <div class="ant-btn-group">
+                                    <button id="btn-scrapper-minus" class="ant-btn-small">-</button>
+                                    <span id="scrapper-count-display" class="upgrade-count">0</span>
+                                    <button id="btn-scrapper-plus" class="ant-btn-small">+</button>
+                                </div>
+                            </div>
+                            <div class="upgrade-row">
+                                <span class="upgrade-name">Auto-Assembler ($200)</span>
+                                <div class="ant-btn-group">
+                                    <button id="btn-assembler-minus" class="ant-btn-small">-</button>
+                                    <span id="assembler-count-display" class="upgrade-count">0</span>
+                                    <button id="btn-assembler-plus" class="ant-btn-small">+</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

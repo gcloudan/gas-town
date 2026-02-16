@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    // Using a new key version to clear any stale logic/state
-    const KEY = 'istio_station_final_v5';
+    const KEY = 'istio_station_final_v7';
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -31,8 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBuildShip: document.getElementById('btn-build-ship'),
         btnForgeGW: document.getElementById('btn-forge-gw'),
         btnSellGW: document.getElementById('btn-sell-gw'),
-        btnAutoScrapper: document.getElementById('btn-auto-scrapper'),
-        btnAutoAssembler: document.getElementById('btn-auto-assembler'),
+        // Control Group Nodes
+        scrapperCountDisp: document.getElementById('scrapper-count-display'),
+        btnScrapperMinus: document.getElementById('btn-scrapper-minus'),
+        btnScrapperPlus: document.getElementById('btn-scrapper-plus'),
+        assemblerCountDisp: document.getElementById('assembler-count-display'),
+        btnAssemblerMinus: document.getElementById('btn-assembler-minus'),
+        btnAssemblerPlus: document.getElementById('btn-assembler-plus'),
         btnInject: document.getElementById('btn-inject'),
         packetCount: document.getElementById('packet-count'),
         simCanvas: document.getElementById('sim-canvas')
@@ -65,15 +69,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Action states - Buffed economy (half as hard)
+        // Action states
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
-        if (refs.btnAutoScrapper) refs.btnAutoScrapper.disabled = state.money < 50;
-        if (refs.btnAutoAssembler) refs.btnAutoAssembler.disabled = state.money < 200;
-
-        if (refs.btnAutoScrapper) refs.btnAutoScrapper.textContent = `Auto-Scrapper (${state.autoScrappers}) - $50`;
-        if (refs.btnAutoAssembler) refs.btnAutoAssembler.textContent = `Auto-Assembler (${state.autoAssemblers}) - $200`;
+        
+        // Control states
+        if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
+        if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
+        
+        if (refs.btnScrapperMinus) refs.btnScrapperMinus.disabled = state.autoScrappers < 1;
+        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.money < 50;
+        if (refs.btnAssemblerMinus) refs.btnAssemblerMinus.disabled = state.autoAssemblers < 1;
+        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.money < 200;
 
         if (refs.packetCount) refs.packetCount.textContent = state.packets.toLocaleString();
     };
@@ -90,72 +98,77 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_auto_assemblers', state.autoAssemblers);
     };
 
-    // Robust Economy Logic
-    if (refs.btnCollectScrap) {
-        refs.btnCollectScrap.onclick = () => {
-            state.scrap += 2;
-            state.money += 10;
+    // Economy Logic
+    refs.btnCollectScrap.onclick = () => {
+        state.scrap += 2;
+        state.money += 10;
+        save();
+        syncUI();
+    };
+
+    refs.btnBuildShip.onclick = () => {
+        if (state.scrap >= 2) {
+            state.scrap -= 2;
+            state.ships++;
             save();
             syncUI();
-        };
-    }
+        }
+    };
 
-    if (refs.btnBuildShip) {
-        refs.btnBuildShip.onclick = () => {
-            if (state.scrap >= 2) {
-                state.scrap -= 2; // Fixed: Taking only 2 scrap
-                state.ships++;
-                save();
-                syncUI();
-            }
-        };
-    }
+    refs.btnForgeGW.onclick = () => {
+        if (state.ships >= 2) {
+            state.ships -= 2;
+            state.gateways++;
+            save();
+            syncUI();
+            notify('New Ingress Gateway Forged!');
+        }
+    };
 
-    if (refs.btnForgeGW) {
-        refs.btnForgeGW.onclick = () => {
-            if (state.ships >= 2) {
-                state.ships -= 2;
-                state.gateways++;
-                save();
-                syncUI();
-                notify('New Ingress Gateway Forged!');
-            }
-        };
-    }
+    refs.btnSellGW.onclick = () => {
+        if (state.gateways >= 1) {
+            state.gateways--;
+            state.money += 1000;
+            save();
+            syncUI();
+            notify('Sold Gateway! +$1,000');
+        }
+    };
 
-    if (refs.btnSellGW) {
-        refs.btnSellGW.onclick = () => {
-            if (state.gateways >= 1) {
-                state.gateways--;
-                state.money += 1000;
-                save();
-                syncUI();
-                notify('Sold Gateway to the Federation! +$1,000');
-            }
-        };
-    }
+    // Upgrade Control Logic
+    refs.btnScrapperPlus.onclick = () => {
+        if (state.money >= 50) {
+            state.money -= 50;
+            state.autoScrappers++;
+            save();
+            syncUI();
+        }
+    };
+    refs.btnScrapperMinus.onclick = () => {
+        if (state.autoScrappers > 0) {
+            state.autoScrappers--;
+            state.money += 25; // Half refund
+            save();
+            syncUI();
+        }
+    };
 
-    if (refs.btnAutoScrapper) {
-        refs.btnAutoScrapper.onclick = () => {
-            if (state.money >= 50) {
-                state.money -= 50;
-                state.autoScrappers++;
-                save();
-                syncUI();
-            }
-        };
-    }
-
-    if (refs.btnAutoAssembler) {
-        refs.btnAutoAssembler.onclick = () => {
-            if (state.money >= 200) {
-                state.money -= 200;
-                state.autoAssemblers++;
-                save();
-                syncUI();
-            }
-        };
-    }
+    refs.btnAssemblerPlus.onclick = () => {
+        if (state.money >= 200) {
+            state.money -= 200;
+            state.autoAssemblers++;
+            save();
+            syncUI();
+        }
+    };
+    refs.btnAssemblerMinus.onclick = () => {
+        if (state.autoAssemblers > 0) {
+            state.autoAssemblers--;
+            state.money += 100; // Half refund
+            save();
+            syncUI();
+        }
+    };
 
     // Auto Loop
     setInterval(() => {
@@ -181,49 +194,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 
     // Inspector
-    if (refs.btnInject) {
-        refs.btnInject.onclick = () => {
-            state.packets++;
-            syncUI();
-            const p = document.createElement('div');
-            p.className = 'packet';
-            p.style.left = '0%';
-            p.style.top = Math.random() * 90 + '%';
-            if (refs.simCanvas) {
-                refs.simCanvas.appendChild(p);
-                p.animate([{ left: '0%', opacity: 1 }, { left: '100%', opacity: 1 }], 1500).onfinish = () => p.remove();
-            }
-        };
-    }
+    refs.btnInject.onclick = () => {
+        state.packets++;
+        syncUI();
+        const p = document.createElement('div');
+        p.className = 'packet';
+        p.style.left = '0%';
+        p.style.top = Math.random() * 90 + '%';
+        if (refs.simCanvas) {
+            refs.simCanvas.appendChild(p);
+            p.animate([{ left: '0%', opacity: 1 }, { left: '100%', opacity: 1 }], 1500).onfinish = () => p.remove();
+        }
+    };
 
     // Hall of Fame
-    if (refs.btnStar) {
-        refs.btnStar.onclick = () => {
-            state.stars++;
+    refs.btnStar.onclick = () => {
+        state.stars++;
+        save();
+        syncUI();
+    };
+
+    refs.btnPost.onclick = () => {
+        const val = refs.logInput.value.trim();
+        if (val) {
+            state.logs.push(val);
+            refs.logInput.value = '';
             save();
             syncUI();
-        };
-    }
+        }
+    };
 
-    if (refs.btnPost) {
-        refs.btnPost.onclick = () => {
-            const val = refs.logInput.value.trim();
-            if (val) {
-                state.logs.push(val);
-                refs.logInput.value = '';
-                save();
-                syncUI();
-            }
-        };
-    }
-
-    if (refs.attestCheck) {
-        refs.attestCheck.onchange = (e) => {
-            state.attested = e.target.checked;
-            save();
-            if (state.attested) notify('Orbital Parity Achieved');
-        };
-    }
+    refs.attestCheck.onchange = (e) => {
+        state.attested = e.target.checked;
+        save();
+        if (state.attested) notify('Orbital Parity Achieved');
+    };
 
     const notify = (msg) => {
         const div = document.createElement('div');
