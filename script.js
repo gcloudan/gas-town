@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v12'; 
+    const KEY = 'istio_station_prestige_v1'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         autoScrappers: parseInt(localStorage.getItem(KEY + '_auto_scrappers') || '0'),
         autoAssemblers: parseInt(localStorage.getItem(KEY + '_auto_assemblers') || '0'),
         askingPrice: parseInt(localStorage.getItem(KEY + '_asking_price') || '1000'),
+        prestige: parseInt(localStorage.getItem(KEY + '_prestige') || '0'),
         packets: 0
     };
 
@@ -41,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btnPriceMinus: document.getElementById('btn-price-minus'),
         btnPricePlus: document.getElementById('btn-price-plus'),
         demandDisp: document.getElementById('demand-disp'),
+        prestigeCount: document.getElementById('prestige-count'),
+        btnPrestige: document.getElementById('btn-prestige'),
         btnInject: document.getElementById('btn-inject'),
         packetCount: document.getElementById('packet-count'),
         simCanvas: document.getElementById('sim-canvas')
@@ -58,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (refs.scrapCount) refs.scrapCount.textContent = state.scrap.toLocaleString();
         if (refs.shipCount) refs.shipCount.textContent = state.ships.toLocaleString();
         if (refs.gwCount) refs.gwCount.textContent = state.gateways.toLocaleString();
+        if (refs.prestigeCount) refs.prestigeCount.textContent = state.prestige.toLocaleString();
         
         if (refs.starCount) refs.starCount.textContent = state.stars.toLocaleString();
         if (refs.starField) {
@@ -80,12 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Action states
+        // Logic Sync
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
+        if (refs.btnPrestige) refs.btnPrestige.disabled = state.money < 10000;
         
-        // Control states
         if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
         if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
         
@@ -112,12 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_auto_scrappers', state.autoScrappers);
         localStorage.setItem(KEY + '_auto_assemblers', state.autoAssemblers);
         localStorage.setItem(KEY + '_asking_price', state.askingPrice);
+        localStorage.setItem(KEY + '_prestige', state.prestige);
     };
 
     // Logic implementation
     if (refs.btnCollectScrap) {
         refs.btnCollectScrap.onclick = () => {
-            state.scrap += 1; // Exactly 1 scrap metal. No money.
+            state.scrap += 1;
             save();
             syncUI();
         };
@@ -153,7 +158,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.money += state.askingPrice;
                 save();
                 syncUI();
-                notify(`Manual Sale: +${state.askingPrice.toLocaleString()} Federation Credits`);
+                notify(`Manual Sale: +$${state.askingPrice.toLocaleString()} Federation Credits`);
+            }
+        };
+    }
+
+    if (refs.btnPrestige) {
+        refs.btnPrestige.onclick = () => {
+            if (state.money >= 10000) {
+                state.money -= 10000;
+                state.prestige++;
+                save();
+                syncUI();
+                notify('Vanguard Prestige Achieved! 🎖️');
             }
         };
     }
@@ -189,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnScrapperMinus.onclick = () => {
             if (state.autoScrappers > 0) {
                 state.autoScrappers--;
-                state.scrap += 5; // Partial refund in scrap
+                state.scrap += 5;
                 save();
                 syncUI();
             }
@@ -210,14 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnAssemblerMinus.onclick = () => {
             if (state.autoAssemblers > 0) {
                 state.autoAssemblers--;
-                state.ships += 5; // Partial refund in ships
+                state.ships += 5;
                 save();
                 syncUI();
             }
         };
     }
 
-    // Auto Loop
     setInterval(() => {
         let changed = false;
         if (state.autoScrappers > 0) {
@@ -234,7 +250,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // NO AUTOMATIC SALES (NO AUTO-INCREMENT OF CREDITS)
+        const demand = calculateDemand();
+        if (state.gateways > 0 && Math.random() * 100 < (demand / 10)) {
+             state.gateways--;
+             state.money += state.askingPrice;
+             changed = true;
+             notify(`Organic Sale: Gateway sold for ${state.askingPrice.toLocaleString()} Federation Credits`);
+        }
 
         if (changed) {
             save();
@@ -242,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
-    // Common
     if (refs.btnInject) {
         refs.btnInject.onclick = () => {
             state.packets++;

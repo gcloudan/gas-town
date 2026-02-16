@@ -154,11 +154,11 @@
             <section id="shipyard" class="ant-card">
                 <div class="ant-card-head">Orbital Shipyard & Gateway Forge</div>
                 <div class="ant-card-body">
-                    <p>Manage your fleet production. Adjust asking price to influence market demand.</p>
+                    <p>Build your fleet. Adjust your price to sell to the Federation.</p>
                     <div class="shipyard-grid">
                         <div class="shipyard-stats">
                             <div class="stat-box money-highlight">
-                                <div class="stat-label">Credits ($)</div>
+                                <div class="stat-label">Federation Credits</div>
                                 <div class="stat-value">$<span id="money-count">0</span></div>
                             </div>
                             <div class="stat-box">
@@ -175,7 +175,7 @@
                             </div>
                         </div>
                         <div class="shipyard-actions">
-                            <button id="btn-collect-scrap" class="ant-btn-primary">Collect Scrap Metal</button>
+                            <button id="btn-collect-scrap" class="ant-btn-primary">Collect Scrap Metal (+1)</button>
                             <button id="btn-build-ship" class="ant-btn-ghost">Assemble Ship (2 Scrap)</button>
                             <button id="btn-forge-gw" class="ant-btn-ghost">Forge Gateway (2 Ships)</button>
                             
@@ -197,7 +197,7 @@
                         </div>
                         <div class="shipyard-upgrades">
                             <div class="upgrade-row">
-                                <span class="upgrade-name">Auto-Scrapper ($50)</span>
+                                <span class="upgrade-name">Auto-Scrapper (10 Scrap)</span>
                                 <div class="ant-btn-group">
                                     <button id="btn-scrapper-minus" class="ant-btn-small">-</button>
                                     <span id="scrapper-count-display" class="upgrade-count">0</span>
@@ -205,7 +205,7 @@
                                 </div>
                             </div>
                             <div class="upgrade-row">
-                                <span class="upgrade-name">Auto-Assembler ($200)</span>
+                                <span class="upgrade-name">Auto-Assembler (10 Ships)</span>
                                 <div class="ant-btn-group">
                                     <button id="btn-assembler-minus" class="ant-btn-small">-</button>
                                     <span id="assembler-count-display" class="upgrade-count">0</span>
@@ -256,6 +256,17 @@
             Istio Space Station ©2026 Engineering Operations Center • EOL March 2026 Threshold
         </div>
     </footer>
+
+    <!-- Prestige Floating Control -->
+    <div class="ant-prestige-float">
+        <div class="prestige-stat">
+            <span class="label">Vanguard Prestige</span>
+            <span class="value"><span id="prestige-count">0</span> 🎖️</span>
+        </div>
+        <button id="btn-prestige" class="ant-btn-primary prestige-btn">
+            Prestige ($10k)
+        </button>
+    </div>
 
     <script src="script.js"></script>
 </body>

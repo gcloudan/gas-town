@@ -80,7 +80,7 @@ body {
 /* Content Area */
 .ant-content {
     flex: 1;
-    padding: 40px 0 80px 0;
+    padding: 40px 0 120px 0; /* Extra room for prestige float */
 }
 
 /* Hero Section */
@@ -388,6 +388,56 @@ body {
     cursor: not-allowed;
 }
 
+/* Floating Prestige Control */
+.ant-prestige-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: white;
+    padding: 16px 24px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 200px;
+    animation: slideUp 0.5s ease-out;
+}
+
+.prestige-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prestige-stat .label {
+    font-weight: 600;
+    color: var(--text-sec);
+}
+
+.prestige-stat .value {
+    font-weight: 800;
+    color: #722ed1; /* Prestige purple */
+    font-size: 1.1rem;
+}
+
+.prestige-btn {
+    background: #722ed1 !important;
+    border-color: #722ed1 !important;
+}
+
+.prestige-btn:hover {
+    background: #9254de !important;
+    border-color: #9254de !important;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
 /* Hall of Fame */
 .fame-header {
     display: flex;
@@ -541,4 +591,5 @@ body {
     .ant-row, .arch-container, .feature-grid, .shipyard-grid, .fame-header, .ant-footer-row { flex-direction: column; align-items: flex-start; }
     .border-left { border-left: none; padding-left: 0; padding-top: 32px; border-top: 1px solid var(--border); }
     .star-field { justify-content: flex-start; }
+    .ant-prestige-float { width: calc(100% - 48px); left: 24px; right: 24px; }
 }
