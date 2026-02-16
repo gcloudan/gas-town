@@ -1,47 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Precise State Management
-    const KEY = 'vanguard_ant_v1';
-    const raw = localStorage.getItem(KEY);
+    // 1. Data Store
+    const KEY = 'vanguard_ant_white_v1';
     let state = {
-        stars: 0,
-        logs: [],
-        attested: false
+        stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
+        logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
+        attested: localStorage.getItem(KEY + '_attested') === 'true'
     };
 
-    if (raw) {
-        try {
-            state = JSON.parse(raw);
-        } catch (e) {
-            console.warn('State recovery failed');
-        }
-    }
-
-    // 2. DOM Selection with Strict IDs
+    // 2. Elements
     const nodes = {
-        starValue: document.getElementById('star-count-value'),
+        starCount: document.getElementById('star-count'),
         starField: document.getElementById('star-field'),
-        logInput: document.getElementById('log-entry-input'),
-        btnTransmit: document.getElementById('btn-transmit-log'),
-        btnAwardStar: document.getElementById('btn-award-star'),
-        checkbox: document.getElementById('attest-checkbox'),
-        timeline: document.getElementById('migration-timeline')
+        logInput: document.getElementById('log-input'),
+        btnPost: document.getElementById('btn-post'),
+        btnStar: document.getElementById('btn-star'),
+        attestCheck: document.getElementById('attest-check'),
+        timeline: document.getElementById('timeline')
     };
 
-    // 3. UI Sync Logic
+    // 3. UI Sync
     const sync = () => {
-        // Stats
-        if (nodes.starValue) {
-            nodes.starValue.textContent = state.stars.toLocaleString();
-        }
+        // Counter
+        if (nodes.starCount) nodes.starCount.textContent = state.stars.toLocaleString();
 
-        // Star Field
+        // Stars
         if (nodes.starField) {
             nodes.starField.innerHTML = '';
-            const visualLimit = Math.min(state.stars, 120);
-            for (let i = 0; i < visualLimit; i++) {
+            const limit = Math.min(state.stars, 100);
+            for (let i = 0; i < limit; i++) {
                 const s = document.createElement('span');
                 s.textContent = '⭐';
-                s.style.animation = 'antPop 0.3s cubic-bezier(0.12, 0.4, 0.29, 1.46)';
+                s.style.display = 'inline-block';
+                s.style.animation = 'pop 0.3s forwards';
                 nodes.starField.appendChild(s);
             }
         }
@@ -49,59 +39,56 @@ document.addEventListener('DOMContentLoaded', () => {
         // Timeline
         if (nodes.timeline) {
             nodes.timeline.innerHTML = '';
-            // Show latest logs first
-            [...state.logs].reverse().forEach(entry => {
+            [...state.logs].reverse().forEach(text => {
                 const div = document.createElement('div');
-                div.className = 'ant-timeline-item';
-                div.textContent = entry;
+                div.className = 'timeline-item';
+                div.textContent = text;
                 nodes.timeline.appendChild(div);
             });
         }
 
         // Checkbox
-        if (nodes.checkbox) {
-            nodes.checkbox.checked = state.attested;
-        }
+        if (nodes.attestCheck) nodes.attestCheck.checked = state.attested;
     };
 
-    const persist = () => {
-        localStorage.setItem(KEY, JSON.stringify(state));
+    const save = () => {
+        localStorage.setItem(KEY + '_stars', state.stars);
+        localStorage.setItem(KEY + '_logs', JSON.stringify(state.logs));
+        localStorage.setItem(KEY + '_attested', state.attested);
     };
 
-    // 4. Action Bindings
-    if (nodes.btnAwardStar) {
-        nodes.btnAwardStar.addEventListener('click', (e) => {
-            e.preventDefault();
+    // 4. Handlers
+    if (nodes.btnStar) {
+        nodes.btnStar.addEventListener('click', () => {
             state.stars++;
-            persist();
+            save();
             sync();
         });
     }
 
-    if (nodes.btnTransmit) {
-        nodes.btnTransmit.addEventListener('click', (e) => {
-            e.preventDefault();
-            const text = nodes.logInput.value.trim();
-            if (text) {
-                state.logs.push(text);
+    if (nodes.btnPost) {
+        nodes.btnPost.addEventListener('click', () => {
+            const val = nodes.logInput.value.trim();
+            if (val) {
+                state.logs.push(val);
                 nodes.logInput.value = '';
-                persist();
+                save();
                 sync();
             }
         });
     }
 
-    if (nodes.checkbox) {
-        nodes.checkbox.addEventListener('change', (e) => {
+    if (nodes.attestCheck) {
+        nodes.attestCheck.addEventListener('change', (e) => {
             state.attested = e.target.checked;
-            persist();
+            save();
             if (state.attested) {
-                notify('Successfully Attested Migration Status');
+                notify('Successfully Attested Migration');
             }
         });
     }
 
-    // 5. Ant Design Feedback (Notification)
+    // 5. Ant Notification
     const notify = (msg) => {
         const div = document.createElement('div');
         div.style.cssText = `
@@ -109,31 +96,27 @@ document.addEventListener('DOMContentLoaded', () => {
             top: 24px;
             right: 24px;
             background: #fff;
+            border: 1px solid #f0f0f0;
             padding: 16px 24px;
-            border-radius: 2px;
-            box-shadow: 0 3px 6px -4px rgba(0,0,0,0.12), 0 6px 16px 0 rgba(0,0,0,0.08);
-            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
             border-left: 4px solid #52c41a;
-            animation: antSlideIn 0.3s forwards;
+            border-radius: 2px;
             display: flex;
             align-items: center;
             gap: 12px;
+            animation: slideIn 0.3s forwards;
         `;
         div.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
         document.body.appendChild(div);
-        
-        setTimeout(() => {
-            div.style.animation = 'antSlideOut 0.3s forwards';
-            setTimeout(() => div.remove(), 300);
-        }, 3000);
+        setTimeout(() => div.remove(), 3000);
     };
 
-    // Inject Runtime Styles
+    // 6. Inline Styles for Anim
     const style = document.createElement('style');
     style.innerHTML = `
-        @keyframes antPop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes antSlideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes antSlideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     `;
     document.head.appendChild(style);
 

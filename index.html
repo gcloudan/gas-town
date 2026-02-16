@@ -6,208 +6,158 @@
     <title>Istio Ingress Gateway Migration | Ant Design</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <section class="ant-layout">
-        <header class="ant-layout-header">
-            <div class="ant-header-content">
-                <div class="ant-logo">VANGUARD</div>
-                <ul class="ant-menu ant-menu-dark ant-menu-horizontal">
-                    <li class="ant-menu-item ant-menu-item-selected">Migration Guide</li>
-                    <li class="ant-menu-item">Architecture</li>
-                    <li class="ant-menu-item">Support</li>
-                </ul>
+<body class="ant-layout">
+    <header class="ant-header">
+        <div class="ant-container header-flex">
+            <div class="ant-logo">ISTIO VANGUARD</div>
+            <ul class="ant-menu">
+                <li class="ant-menu-item active">Migration Guide</li>
+                <li class="ant-menu-item">Architecture</li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="ant-content">
+        <div class="ant-container">
+            <div class="ant-page-header">
+                <h1 class="ant-title">🚀 Istio Ingress Gateway Migration</h1>
+                <div class="ant-psa">
+                    <span class="ant-tag-red">CRITICAL PSA</span>
+                    <span class="psa-text">Traditional Kubernetes Ingress controllers reach <strong>End of Life (EOL) in March 2026</strong>. Transition to Istio Ingress Gateway is mandatory.</span>
+                </div>
             </div>
-        </header>
-        
-        <main class="ant-layout-content">
-            <div class="ant-page-container">
-                <div class="ant-page-header">
-                    <div class="ant-page-header-heading">
-                        <span class="ant-page-header-heading-title">🚀 Istio Ingress Gateway Migration</span>
-                    </div>
-                    <div class="ant-page-header-content">
-                        <p class="psa-banner">
-                            <span class="ant-tag ant-tag-red">URGENT PSA</span>
-                            Traditional Kubernetes Ingress controllers reach <strong>End of Life (EOL) in March 2026</strong>. 
-                            The Vanguard protocol mandates a complete transition to Istio Ingress Gateway to ensure operational continuity.
-                        </p>
-                    </div>
-                </div>
 
-                <div class="ant-card ant-card-bordered">
-                    <div class="ant-card-head">
-                        <div class="ant-card-head-wrapper">
-                            <div class="ant-card-head-title">Why Istio Ingress Gateway?</div>
+            <div class="ant-card">
+                <div class="ant-card-head">The Evolution: Why Istio Ingress Gateway?</div>
+                <div class="ant-card-body">
+                    <p class="hero-text">Moving beyond NGINX Ingress is like upgrading from a reliable sedan to a futuristic starship. Here's why Istio wins:</p>
+                    <div class="ant-row">
+                        <div class="ant-col">
+                            <ul class="ant-list">
+                                <li><strong>Unified Control Plane:</strong> Single point of management for security and traffic.</li>
+                                <li><strong>Advanced Traffic Steering:</strong> Native support for Canary and Blue/Green.</li>
+                            </ul>
                         </div>
-                    </div>
-                    <div class="ant-card-body">
-                        <p class="hero-text">Moving beyond NGINX Ingress is like upgrading from a reliable sedan to a futuristic starship. Here's why Istio wins:</p>
-                        <div class="ant-row">
-                            <div class="ant-col ant-col-12">
-                                <ul class="ant-list-items">
-                                    <li><strong>Unified Control Plane:</strong> Single point of management for security and traffic.</li>
-                                    <li><strong>Advanced Traffic Steering:</strong> Native support for Canary and Blue/Green.</li>
-                                </ul>
-                            </div>
-                            <div class="ant-col ant-col-12">
-                                <ul class="ant-list-items">
-                                    <li><strong>mTLS Everywhere:</strong> Built-in zero-trust encryption.</li>
-                                    <li><strong>L7 Observability:</strong> Deep request insights without sidecar injection.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ant-card ant-card-bordered" style="margin-top: 24px;">
-                    <div class="ant-card-head">
-                        <div class="ant-card-head-wrapper">
-                            <div class="ant-card-head-title">Architectural Patterns: Shared vs. Dedicated</div>
-                        </div>
-                    </div>
-                    <div class="ant-card-body">
-                        <div class="architecture-grid">
-                            <div class="arch-pane">
-                                <h3>Shared Ingress Gateway</h3>
-                                <p>Standardized multi-tenant ingress cluster.</p>
-                                <ul class="arch-list">
-                                    <li>Resource optimized (one NLB)</li>
-                                    <li>Centralized policy management</li>
-                                    <li><em>Risk: Noisy neighbor interference</em></li>
-                                </ul>
-                                <div class="diagram-box">
-                                    <svg viewBox="0 0 300 200" class="arch-svg">
-                                        <!-- Shared Architecture -->
-                                        <text x="30" y="25" fill="#8c8c8c" font-size="8">CLIENTS</text>
-                                        <circle cx="15" cy="40" r="3" fill="#1890ff" />
-                                        <circle cx="15" cy="50" r="3" fill="#1890ff" />
-                                        <circle cx="15" cy="60" r="3" fill="#1890ff" />
-                                        
-                                        <path d="M 25 50 L 65 50" stroke="#bfbfbf" stroke-width="1" />
-                                        
-                                        <!-- NLB -->
-                                        <rect x="70" y="35" width="40" height="30" rx="2" fill="#1890ff" />
-                                        <text x="90" y="53" text-anchor="middle" fill="white" font-size="9" font-weight="bold">NLB</text>
-                                        
-                                        <path d="M 110 50 L 145 50" stroke="#bfbfbf" stroke-width="1" />
-                                        
-                                        <!-- GW -->
-                                        <rect x="150" y="30" width="60" height="40" rx="2" fill="#e6f7ff" stroke="#1890ff" />
-                                        <text x="180" y="55" text-anchor="middle" fill="#003a8c" font-size="9" font-weight="bold">SHARED GW</text>
-                                        
-                                        <!-- Apps -->
-                                        <path d="M 210 50 L 245 30 M 210 50 L 245 50 M 210 50 L 245 70" stroke="#bfbfbf" stroke-width="1" stroke-dasharray="2,2" />
-                                        
-                                        <rect x="250" y="20" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="270" y="32" text-anchor="middle" fill="#595959" font-size="8">App A</text>
-                                        
-                                        <rect x="250" y="45" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="270" y="57" text-anchor="middle" fill="#595959" font-size="8">App B</text>
-                                        
-                                        <rect x="250" y="70" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="270" y="82" text-anchor="middle" fill="#595959" font-size="8">App C</text>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="arch-pane pane-left-border">
-                                <h3>Dedicated Ingress Gateway</h3>
-                                <p>Sovereign gateway per application/team.</p>
-                                <ul class="arch-list">
-                                    <li>Total blast radius isolation</li>
-                                    <li>Independent scaling and cycles</li>
-                                    <li><em>Risk: Increased cloud provider costs</em></li>
-                                </ul>
-                                <div class="diagram-box">
-                                    <svg viewBox="0 0 300 200" class="arch-svg">
-                                        <!-- Dedicated Architecture -->
-                                        <!-- Stack 1 -->
-                                        <text x="20" y="20" fill="#8c8c8c" font-size="8">CLIENT A</text>
-                                        <circle cx="15" cy="35" r="3" fill="#1890ff" />
-                                        <path d="M 25 35 L 55 35" stroke="#bfbfbf" />
-                                        <rect x="60" y="25" width="40" height="20" rx="2" fill="#1890ff" />
-                                        <text x="80" y="37" text-anchor="middle" fill="white" font-size="8">NLB 1</text>
-                                        <path d="M 100 35 L 125 35" stroke="#bfbfbf" />
-                                        <rect x="130" y="20" width="50" height="30" rx="2" fill="#e6f7ff" stroke="#1890ff" />
-                                        <text x="155" y="37" text-anchor="middle" fill="#003a8c" font-size="8">GW A</text>
-                                        <path d="M 180 35 L 215 35" stroke="#bfbfbf" />
-                                        <rect x="220" y="25" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="240" y="37" text-anchor="middle" fill="#595959" font-size="8">App A</text>
-
-                                        <!-- Stack 2 -->
-                                        <text x="20" y="75" fill="#8c8c8c" font-size="8">CLIENT B</text>
-                                        <circle cx="15" cy="90" r="3" fill="#1890ff" />
-                                        <path d="M 25 90 L 55 90" stroke="#bfbfbf" />
-                                        <rect x="60" y="80" width="40" height="20" rx="2" fill="#1890ff" />
-                                        <text x="80" y="92" text-anchor="middle" fill="white" font-size="8">NLB 2</text>
-                                        <path d="M 100 90 L 125 90" stroke="#bfbfbf" />
-                                        <rect x="130" y="75" width="50" height="30" rx="2" fill="#e6f7ff" stroke="#1890ff" />
-                                        <text x="155" y="92" text-anchor="middle" fill="#003a8c" font-size="8">GW B</text>
-                                        <path d="M 180 90 L 215 90" stroke="#bfbfbf" />
-                                        <rect x="220" y="80" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
-                                        <text x="240" y="92" text-anchor="middle" fill="#595959" font-size="8">App B</text>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ant-card ant-card-bordered" style="margin-top: 24px;">
-                    <div class="ant-card-head">
-                        <div class="ant-card-head-wrapper">
-                            <div class="ant-card-head-title">Migration Hall of Fame</div>
-                        </div>
-                    </div>
-                    <div class="ant-card-body">
-                        <div class="hall-of-fame-controls">
-                            <div class="ant-statistic">
-                                <div class="ant-statistic-title">Successful Migrations</div>
-                                <div class="ant-statistic-content">
-                                    <span id="star-count-value" class="ant-statistic-content-value">0</span>
-                                    <span class="ant-statistic-content-suffix">⭐</span>
-                                </div>
-                            </div>
-                            <div id="star-field" class="ant-star-visual-field"></div>
-                        </div>
-
-                        <div class="ant-form ant-form-vertical">
-                            <div class="ant-form-item">
-                                <div class="ant-form-item-control">
-                                    <div class="ant-input-search ant-input-group-wrapper">
-                                        <span class="ant-input-wrapper ant-input-group">
-                                            <input type="text" id="log-entry-input" class="ant-input" placeholder="Enter migration frequency log...">
-                                            <span class="ant-input-group-addon">
-                                                <button id="btn-transmit-log" class="ant-btn ant-btn-primary ant-input-search-button">Transmit</button>
-                                            </span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ant-form-item">
-                                <div class="attestation-row">
-                                    <label class="ant-checkbox-wrapper">
-                                        <span class="ant-checkbox">
-                                            <input type="checkbox" id="attest-checkbox" class="ant-checkbox-input">
-                                            <span class="ant-checkbox-inner"></span>
-                                        </span>
-                                        <span>I attest that I have breached the Istio event horizon.</span>
-                                    </label>
-                                    <button id="btn-award-star" class="ant-btn">✨ Award Star</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="migration-timeline" class="ant-timeline">
-                            <!-- Logs will be prepended here -->
+                        <div class="ant-col">
+                            <ul class="ant-list">
+                                <li><strong>mTLS Everywhere:</strong> Built-in zero-trust encryption.</li>
+                                <li><strong>L7 Observability:</strong> Deep request insights without sidecar injection.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
-        <footer class="ant-layout-footer">
-            Istio Vanguard ©2026 Engineering Operations • March 2026 EOL Threshold
-        </footer>
-    </section>
+
+            <div class="ant-card">
+                <div class="ant-card-head">Architectural Patterns: Shared vs. Dedicated</div>
+                <div class="ant-card-body">
+                    <div class="arch-container">
+                        <div class="arch-pane">
+                            <h3>Shared Ingress Gateway</h3>
+                            <p class="arch-desc">Standardized multi-tenant ingress cluster.</p>
+                            <ul class="arch-features">
+                                <li>Resource optimized (one NLB)</li>
+                                <li>Centralized policy management</li>
+                                <li><em>Risk: Noisy neighbor interference</em></li>
+                            </ul>
+                            <div class="diagram-wrap">
+                                <svg viewBox="0 0 300 120" class="arch-svg">
+                                    <text x="10" y="20" font-size="8" fill="#8c8c8c">CLIENTS</text>
+                                    <circle cx="20" cy="45" r="3" fill="#1890ff" />
+                                    <circle cx="20" cy="60" r="3" fill="#1890ff" />
+                                    <circle cx="20" cy="75" r="3" fill="#1890ff" />
+                                    <line x1="25" y1="60" x2="55" y2="60" stroke="#d9d9d9" />
+                                    <rect x="60" y="45" width="40" height="30" rx="2" fill="#1890ff" />
+                                    <text x="80" y="64" text-anchor="middle" fill="white" font-size="9" font-weight="bold">NLB</text>
+                                    <line x1="100" y1="60" x2="130" y2="60" stroke="#d9d9d9" />
+                                    <rect x="135" y="40" width="60" height="40" rx="2" fill="#e6f7ff" stroke="#1890ff" />
+                                    <text x="165" y="64" text-anchor="middle" fill="#003a8c" font-size="9" font-weight="bold">SHARED GW</text>
+                                    <path d="M 195 60 L 235 35 M 195 60 L 235 60 M 195 60 L 235 85" stroke="#d9d9d9" stroke-dasharray="2,2" />
+                                    <rect x="240" y="25" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                    <text x="260" y="38" text-anchor="middle" fill="#595959" font-size="8">App A</text>
+                                    <rect x="240" y="50" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                    <text x="260" y="63" text-anchor="middle" fill="#595959" font-size="8">App B</text>
+                                    <rect x="240" y="75" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                    <text x="260" y="88" text-anchor="middle" fill="#595959" font-size="8">App C</text>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="arch-pane border-left">
+                            <h3>Dedicated Ingress Gateway</h3>
+                            <p class="arch-desc">Sovereign gateway per application/team.</p>
+                            <ul class="arch-features">
+                                <li>Total blast radius isolation</li>
+                                <li>Independent scaling and cycles</li>
+                                <li><em>Risk: Increased cloud provider costs</em></li>
+                            </ul>
+                            <div class="diagram-wrap">
+                                <svg viewBox="0 0 300 120" class="arch-svg">
+                                    <circle cx="20" cy="35" r="3" fill="#1890ff" />
+                                    <line x1="25" y1="35" x2="55" y2="35" stroke="#d9d9d9" />
+                                    <rect x="60" y="25" width="40" height="20" rx="2" fill="#1890ff" />
+                                    <text x="80" y="38" text-anchor="middle" fill="white" font-size="8">NLB 1</text>
+                                    <line x1="100" y1="35" x2="130" y2="35" stroke="#d9d9d9" />
+                                    <rect x="135" y="25" width="50" height="30" rx="2" fill="#e6f7ff" stroke="#1890ff" />
+                                    <text x="160" y="42" text-anchor="middle" fill="#003a8c" font-size="8">GW 1</text>
+                                    <line x1="185" y1="35" x2="215" y2="35" stroke="#d9d9d9" />
+                                    <rect x="220" y="25" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                    <text x="240" y="38" text-anchor="middle" fill="#595959" font-size="8">App A</text>
+
+                                    <circle cx="20" cy="85" r="3" fill="#1890ff" />
+                                    <line x1="25" y1="85" x2="55" y2="85" stroke="#d9d9d9" />
+                                    <rect x="60" y="75" width="40" height="20" rx="2" fill="#1890ff" />
+                                    <text x="80" y="88" text-anchor="middle" fill="white" font-size="8">NLB 2</text>
+                                    <line x1="100" y1="85" x2="130" y2="85" stroke="#d9d9d9" />
+                                    <rect x="135" y="75" width="50" height="30" rx="2" fill="#e6f7ff" stroke="#1890ff" />
+                                    <text x="160" y="92" text-anchor="middle" fill="#003a8c" font-size="8">GW 2</text>
+                                    <line x1="185" y1="85" x2="215" y2="85" stroke="#d9d9d9" />
+                                    <rect x="220" y="75" width="40" height="20" rx="2" fill="#fafafa" stroke="#d9d9d9" />
+                                    <text x="240" y="88" text-anchor="middle" fill="#595959" font-size="8">App B</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ant-card">
+                    <div class="ant-card-head">Migration Hall of Fame</div>
+                    <div class="ant-card-body">
+                        <div class="fame-header">
+                            <div class="ant-stat">
+                                <div class="ant-stat-title">Successful Migrations</div>
+                                <div class="ant-stat-value"><span id="star-count">0</span> ⭐</div>
+                            </div>
+                            <div id="star-field" class="star-field"></div>
+                        </div>
+
+                        <div class="ant-form">
+                            <div class="ant-input-search">
+                                <input type="text" id="log-input" placeholder="Enter migration log entry..." class="ant-input">
+                                <button id="btn-post" class="ant-btn-primary">Transmit</button>
+                            </div>
+                            <div class="ant-footer-row">
+                                <label class="ant-checkbox-wrap">
+                                    <input type="checkbox" id="attest-check">
+                                    <span>I attest that I have successfully migrated.</span>
+                                </label>
+                                <button id="btn-star" class="ant-btn-ghost">✨ Award Star</button>
+                            </div>
+                        </div>
+
+                        <div id="timeline" class="ant-timeline">
+                            <!-- Injected logs -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="ant-footer">
+        <div class="ant-container">
+            Istio Vanguard ©2026 Engineering • EOL March 2026
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
