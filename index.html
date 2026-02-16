@@ -3,15 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <title>NGINX Ingress to Istio Ingress Migration Guide</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="light-mode">
     <div class="container">
-        <h1>Hello World!</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <header>
+            <h1>🚀 NGINX Ingress to Istio Ingress</h1>
+            <p class="subtitle">A Fun Guide to Modern Traffic Management</p>
+            <button id="theme-toggle" class="theme-toggle">🌙</button>
+        </header>
+
+        <section id="why-istio">
+            <h2>Why Istio Ingress?</h2>
+            <p>Moving beyond NGINX Ingress is like upgrading from a reliable sedan to a futuristic starship. Here's why Istio wins:</p>
+            <ul>
+                <li><strong>Unified Control Plane:</strong> Manage security, traffic, and observability in one place.</li>
+                <li><strong>Advanced Traffic Steering:</strong> Canary deployments, mirroring, and circuit breaking are first-class citizens.</li>
+                <li><strong>mTLS Everywhere:</strong> Zero-trust networking is built-in, not bolted on.</li>
+                <li><strong>Observability:</strong> Deep insights into every request without changing your app code.</li>
+            </ul>
+        </section>
+
+        <section id="gateways">
+            <h2>Shared vs. Dedicated Gateways</h2>
+            <div class="comparison">
+                <div class="card">
+                    <h3>Shared Gateways</h3>
+                    <p>One Gateway to rule them all. Best for small clusters or when cost is a primary concern.</p>
+                    <p><strong>Pros:</strong> Lower resource overhead, simpler initial setup.</p>
+                </div>
+                <div class="card">
+                    <h3>Dedicated Gateways</h3>
+                    <p>A Gateway for every team or application. Best for high-traffic apps and strict isolation.</p>
+                    <p><strong>Pros:</strong> Better blast radius control, independent scaling, team autonomy.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="interactive">
+            <h2>Migration Hall of Fame</h2>
+            <p>Have you made the jump? Leave your mark below!</p>
+            
+            <div class="input-group">
+                <input type="text" id="user-comment" placeholder="Tell us about your migration experience...">
+                <button id="add-comment">Post Update</button>
+            </div>
+
+            <div class="attestation-group">
+                <label>
+                    <input type="checkbox" id="migration-check">
+                    I attest that I have successfully migrated to Istio Ingress!
+                </label>
+            </div>
+
+            <div id="stars-container" class="stars-container">
+                <!-- Stars will be added here -->
+            </div>
+            <button id="add-star">✨ Add Star of Success</button>
+
+            <div id="comments-list" class="comments-list">
+                <!-- Comments will be listed here -->
+            </div>
+        </section>
     </div>
-    <button id="theme-toggle" class="theme-toggle">🌙</button>
     <script src="script.js"></script>
 </body>
 </html>

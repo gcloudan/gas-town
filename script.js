@@ -1,33 +1,75 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const toggleButton = document.getElementById('theme-toggle');
+    const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
+    const addCommentBtn = document.getElementById('add-comment');
+    const commentInput = document.getElementById('user-comment');
+    const commentsList = document.getElementById('comments-list');
+    const addStarBtn = document.getElementById('add-star');
+    const starsContainer = document.getElementById('stars-container');
+    const migrationCheck = document.getElementById('migration-check');
 
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        body.classList.add(savedTheme);
-        if (savedTheme === 'dark-mode') {
-            toggleButton.textContent = '☀️';
-        } else {
-            toggleButton.textContent = '🌙';
-        }
-    } else {
-        // Default to light mode if no preference is saved
-        body.classList.add('light-mode');
-        toggleButton.textContent = '🌙';
-    }
+    // Theme logic
+    const savedTheme = localStorage.getItem('theme') || 'light-mode';
+    body.className = savedTheme;
+    themeToggle.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
 
-    toggleButton.addEventListener('click', () => {
+    themeToggle.addEventListener('click', () => {
         if (body.classList.contains('light-mode')) {
-            body.classList.remove('light-mode');
-            body.classList.add('dark-mode');
-            toggleButton.textContent = '☀️';
+            body.className = 'dark-mode';
+            themeToggle.textContent = '☀️';
             localStorage.setItem('theme', 'dark-mode');
         } else {
-            body.classList.remove('dark-mode');
-            body.classList.add('light-mode');
-            toggleButton.textContent = '🌙';
+            body.className = 'light-mode';
+            themeToggle.textContent = '🌙';
             localStorage.setItem('theme', 'light-mode');
         }
     });
+
+    // Comments logic
+    const loadComments = () => {
+        const comments = JSON.parse(localStorage.getItem('migrationComments') || '[]');
+        commentsList.innerHTML = '';
+        comments.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'comment-item';
+            div.textContent = c;
+            commentsList.appendChild(div);
+        });
+    };
+
+    addCommentBtn.addEventListener('click', () => {
+        const text = commentInput.value.trim();
+        if (text) {
+            const comments = JSON.parse(localStorage.getItem('migrationComments') || '[]');
+            comments.push(text);
+            localStorage.setItem('migrationComments', JSON.stringify(comments));
+            commentInput.value = '';
+            loadComments();
+        }
+    });
+
+    // Stars logic
+    const loadStars = () => {
+        const starCount = parseInt(localStorage.getItem('starCount') || '0');
+        starsContainer.innerHTML = '⭐'.repeat(starCount);
+    };
+
+    addStarBtn.addEventListener('click', () => {
+        let starCount = parseInt(localStorage.getItem('starCount') || '0');
+        starCount++;
+        localStorage.setItem('starCount', starCount.toString());
+        loadStars();
+    });
+
+    // Attestation logic
+    migrationCheck.checked = localStorage.getItem('attested') === 'true';
+    migrationCheck.addEventListener('change', () => {
+        localStorage.setItem('attested', migrationCheck.checked);
+        if (migrationCheck.checked) {
+            alert('Congratulations on your migration! 🎊');
+        }
+    });
+
+    loadComments();
+    loadStars();
 });

@@ -1,37 +1,122 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --card-bg: #f4f4f4;
+    --accent-color: #007bff;
+    --header-bg: #f8f9fa;
+}
+
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-color: #f4f4f4;
+    --card-bg: #2d2d2d;
+    --accent-color: #375a7f;
+    --header-bg: #111111;
+}
+
 body {
     margin: 0;
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
 }
 
 .container {
-    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
     padding: 20px;
-    max-width: 800px;
+}
+
+header {
+    text-align: center;
+    padding: 40px 0;
+    background-color: var(--header-bg);
+    margin-bottom: 30px;
+    border-radius: 8px;
+    position: relative;
 }
 
 .theme-toggle {
     position: absolute;
     top: 20px;
     right: 20px;
+    font-size: 24px;
     background: none;
     border: none;
-    font-size: 24px;
     cursor: pointer;
 }
 
-/* Light mode */
-body.light-mode {
-    background-color: white;
-    color: black;
+section {
+    margin-bottom: 40px;
 }
 
-/* Dark mode */
-body.dark-mode {
-    background-color: #1a1a1a;
+h1, h2, h3 {
+    color: var(--accent-color);
+}
+
+.comparison {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    flex: 1;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: var(--accent-color);
     color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.stars-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+    min-height: 40px;
+    font-size: 30px;
+}
+
+.comments-list {
+    margin-top: 20px;
+}
+
+.comment-item {
+    background-color: var(--card-bg);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-left: 5px solid var(--accent-color);
+    border-radius: 4px;
+}
+
+.attestation-group {
+    margin: 15px 0;
+    font-weight: bold;
 }
