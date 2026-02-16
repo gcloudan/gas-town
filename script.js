@@ -1,92 +1,97 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Initial State
+    // 1. Initialize State
     const state = {
-        stars: parseInt(localStorage.getItem('vanguard_stars') || '0'),
-        logs: JSON.parse(localStorage.getItem('vanguard_logs') || '[]'),
-        attested: localStorage.getItem('vanguard_attested') === 'true'
+        stars: parseInt(localStorage.getItem('gt_warp_stars') || '0'),
+        comments: JSON.parse(localStorage.getItem('gt_warp_comments') || '[]'),
+        attested: localStorage.getItem('gt_warp_attested') === 'true'
     };
 
-    // DOM Elements
-    const starBtn = document.getElementById('action-star');
-    const transmitBtn = document.getElementById('action-transmit');
-    const commInput = document.getElementById('comm-input');
+    // 2. Select Elements (with null checks)
+    const starBtn = document.getElementById('btn-star');
+    const postBtn = document.getElementById('btn-post');
+    const commentInput = document.getElementById('user-comment');
     const starField = document.getElementById('star-field');
     const starBadge = document.getElementById('star-count-badge');
-    const logWall = document.getElementById('log-wall');
-    const attestCheck = document.getElementById('vanguard-check');
+    const commentsList = document.getElementById('comments-list');
+    const attestCheck = document.getElementById('migration-check');
 
-    // Sync State to UI
-    const syncUI = () => {
-        // Update Stars
-        starBadge.textContent = `${state.stars} Stars`;
-        starField.innerHTML = '';
-        for (let i = 0; i < Math.min(state.stars, 100); i++) {
-            const s = document.createElement('span');
-            s.textContent = '⭐';
-            s.className = 'star-anim';
-            starField.appendChild(s);
-        }
-
-        // Update Logs
-        logWall.innerHTML = '';
-        state.logs.slice().reverse().forEach(entry => {
-            const div = document.createElement('div');
-            div.className = 'log-entry';
-            div.textContent = entry;
-            logWall.appendChild(div);
-        });
-
-        // Update Attestation
-        attestCheck.checked = state.attested;
-    };
-
-    const save = () => {
-        localStorage.setItem('vanguard_stars', state.stars);
-        localStorage.setItem('vanguard_logs', JSON.stringify(state.logs));
-        localStorage.setItem('vanguard_attested', state.attested);
-    };
-
-    // Listeners
-    starBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        state.stars++;
-        save();
-        syncUI();
+    // 3. UI Update Function
+    const updateUI = () => {
+        if (starBadge) starBadge.textContent = `${state.stars} Stars`;
         
-        // Visual feedback
-        starBtn.style.transform = 'scale(0.95)';
-        setTimeout(() => starBtn.style.transform = 'translateY(-2px)', 100);
-    });
+        if (starField) {
+            starField.innerHTML = '';
+            const displayStars = Math.min(state.stars, 100);
+            for (let i = 0; i < displayStars; i++) {
+                const s = document.createElement('span');
+                s.textContent = '⭐';
+                s.style.animation = `pop 0.3s ease forwards`;
+                starField.appendChild(s);
+            }
+        }
 
-    transmitBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const val = commInput.value.trim();
-        if (val) {
-            state.logs.push(val);
-            commInput.value = '';
+        if (commentsList) {
+            commentsList.innerHTML = '';
+            state.comments.slice().reverse().forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'comment-entry';
+                div.textContent = c;
+                commentsList.appendChild(div);
+            });
+        }
+
+        if (attestCheck) {
+            attestCheck.checked = state.attested;
+        }
+    };
+
+    // 4. Persistence
+    const save = () => {
+        localStorage.setItem('gt_warp_stars', state.stars);
+        localStorage.setItem('gt_warp_comments', JSON.stringify(state.comments));
+        localStorage.setItem('gt_warp_attested', state.attested);
+    };
+
+    // 5. Event Listeners
+    if (starBtn) {
+        starBtn.onclick = () => {
+            state.stars++;
             save();
-            syncUI();
-        }
-    });
+            updateUI();
+        };
+    }
 
-    attestCheck.addEventListener('change', () => {
-        state.attested = attestCheck.checked;
-        save();
-        if (state.attested) {
-            triggerConfetti();
-        }
-    });
+    if (postBtn) {
+        postBtn.onclick = () => {
+            const val = commentInput.value.trim();
+            if (val) {
+                state.comments.push(val);
+                commentInput.value = '';
+                save();
+                updateUI();
+            }
+        };
+    }
 
-    // High-end interaction effects
+    if (attestCheck) {
+        attestCheck.onchange = (e) => {
+            state.attested = e.target.checked;
+            save();
+            if (state.attested) {
+                triggerConfetti();
+            }
+        };
+    }
+
     const triggerConfetti = () => {
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 50; i++) {
             const p = document.createElement('div');
             p.style.cssText = `
                 position: fixed;
                 left: ${Math.random() * 100}vw;
                 top: -10px;
-                width: 8px; height: 8px;
-                background: ${['#6366f1', '#f59e0b', '#fff'][Math.floor(Math.random()*3)]};
+                width: 10px; height: 10px;
+                background: ${['#00d2ff', '#9d50bb', '#fff'][Math.floor(Math.random() * 3)]};
                 border-radius: 50%;
                 z-index: 1000;
                 pointer-events: none;
@@ -95,15 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
             p.animate([
                 { transform: 'translateY(0) rotate(0)', opacity: 1 },
                 { transform: `translateY(100vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
-            ], { duration: 1500 + Math.random() * 1000 }).onfinish = () => p.remove();
+            ], { duration: 2000 }).onfinish = () => p.remove();
         }
     };
 
-    // Handle Enter key for transmission
-    commInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') transmitBtn.click();
-    });
-
     // Initial Sync
-    syncUI();
+    updateUI();
 });
