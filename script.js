@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v10'; 
+    const KEY = 'istio_station_final_v11'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const calculateDemand = () => {
         const basePrice = 1000;
-        let demand = Math.max(0, 100 - (state.askingPrice - basePrice) / 15);
-        if (state.askingPrice < basePrice) demand = Math.min(250, 100 + (basePrice - state.askingPrice) / 4);
+        let demand = Math.max(0, 100 - (state.askingPrice - basePrice) / 10);
+        if (state.askingPrice < basePrice) demand = Math.min(250, 100 + (basePrice - state.askingPrice) / 2);
         return Math.round(demand);
     };
 
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Costs/Logic Sync
+        // Logic Sync
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logic implementation
     if (refs.btnCollectScrap) {
         refs.btnCollectScrap.onclick = () => {
-            state.scrap += 1;
+            state.scrap += 1; // Exactly 1 scrap, no money.
             save();
             syncUI();
         };
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.money += state.askingPrice;
                 save();
                 syncUI();
-                notify(`Manual Sale: +$${state.askingPrice.toLocaleString()}`);
+                notify(`Manual Sale: +${state.askingPrice.toLocaleString()} Federation Credits`);
             }
         };
     }
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnScrapperMinus.onclick = () => {
             if (state.autoScrappers > 0) {
                 state.autoScrappers--;
-                state.scrap += 5; // Refund 5
+                state.scrap += 5; // Partial refund in scrap
                 save();
                 syncUI();
             }
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnAssemblerMinus.onclick = () => {
             if (state.autoAssemblers > 0) {
                 state.autoAssemblers--;
-                state.ships += 5; // Refund 5
+                state.ships += 5; // Partial refund in ships
                 save();
                 syncUI();
             }
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
              state.gateways--;
              state.money += state.askingPrice;
              changed = true;
-             notify(`Organic Sale: Gateway sold for $${state.askingPrice.toLocaleString()}`);
+             notify(`Organic Sale: Gateway sold for ${state.askingPrice.toLocaleString()} Federation Credits`);
         }
 
         if (changed) {
@@ -246,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
-    // Common
     if (refs.btnInject) {
         refs.btnInject.onclick = () => {
             state.packets++;
