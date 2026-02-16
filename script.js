@@ -1,132 +1,142 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Core State
-    const storageKey = 'istio_vanguard_data';
-    const rawData = localStorage.getItem(storageKey);
+    // 1. Initial State
+    const STORAGE_KEY = 'vanguard_v5_data';
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    
     let state = {
         stars: 0,
         logs: [],
         attested: false
     };
 
-    if (rawData) {
+    if (savedData) {
         try {
-            state = JSON.parse(rawData);
+            state = JSON.parse(savedData);
         } catch (e) {
-            console.error('Failed to parse state', e);
+            console.error('State parse failed', e);
         }
     }
 
-    // 2. DOM Selectors (Strict IDs)
-    const el = {
-        starCount: document.getElementById('stars-total'),
-        starField: document.getElementById('star-field'),
-        logInput: document.getElementById('log-input'),
-        btnTransmit: document.getElementById('btn-transmit'),
-        btnAwardStar: document.getElementById('btn-award-star'),
-        checkAttest: document.getElementById('check-attest'),
-        logsTimeline: document.getElementById('logs-timeline')
+    // 2. Element References
+    const refs = {
+        starLabel: document.getElementById('star-count-label'),
+        starField: document.getElementById('star-field-display'),
+        logInput: document.getElementById('log-message'),
+        submitBtn: document.getElementById('submit-log'),
+        starBtn: document.getElementById('award-star-btn'),
+        attestCheck: document.getElementById('attestation-box'),
+        logsList: document.getElementById('migration-logs')
     };
 
-    // 3. Update Function
-    const syncUI = () => {
-        if (el.starCount) {
-            el.starCount.textContent = `${state.stars} Stars Awarded`;
+    // 3. UI Synchronization
+    const updateUI = () => {
+        // Update Star Label
+        if (refs.starLabel) {
+            refs.starLabel.textContent = `${state.stars} Star${state.stars === 1 ? '' : 's'} Collected`;
         }
 
-        if (el.starField) {
-            el.starField.innerHTML = '';
-            // Visual cap to 100 stars for performance
-            const visualStars = Math.min(state.stars, 100);
-            for (let i = 0; i < visualStars; i++) {
-                const span = document.createElement('span');
-                span.textContent = '⭐';
-                el.starField.appendChild(span);
+        // Update Star Field
+        if (refs.starField) {
+            refs.starField.innerHTML = '';
+            // Display limit to 150 stars
+            const count = Math.min(state.stars, 150);
+            for (let i = 0; i < count; i++) {
+                const s = document.createElement('span');
+                s.textContent = '⭐';
+                refs.starField.appendChild(s);
             }
         }
 
-        if (el.logsTimeline) {
-            el.logsTimeline.innerHTML = '';
-            // Show logs in reverse chronological order
+        // Update Logs
+        if (refs.logsList) {
+            refs.logsList.innerHTML = '';
             [...state.logs].reverse().forEach(text => {
-                const item = document.createElement('div');
-                item.className = 'ant-timeline-item';
-                item.textContent = text;
-                el.logsTimeline.appendChild(item);
+                const div = document.createElement('div');
+                div.className = 'timeline-entry';
+                div.textContent = text;
+                refs.logsList.appendChild(div);
             });
         }
 
-        if (el.checkAttest) {
-            el.checkAttest.checked = !!state.attested;
+        // Sync Checkbox
+        if (refs.attestCheck) {
+            refs.attestCheck.checked = state.attested;
         }
     };
 
-    const persist = () => {
-        localStorage.setItem(storageKey, JSON.stringify(state));
+    const save = () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     };
 
-    // 4. Action Handlers
-    if (el.btnAwardStar) {
-        el.btnAwardStar.addEventListener('click', () => {
+    // 4. Interaction Logic
+    if (refs.starBtn) {
+        refs.starBtn.onclick = (e) => {
+            e.preventDefault();
             state.stars++;
-            persist();
-            syncUI();
-        });
+            save();
+            updateUI();
+        };
     }
 
-    if (el.btnTransmit) {
-        el.btnTransmit.addEventListener('click', () => {
-            const val = el.logInput.value.trim();
+    if (refs.submitBtn) {
+        refs.submitBtn.onclick = (e) => {
+            e.preventDefault();
+            const val = refs.logInput.value.trim();
             if (val) {
                 state.logs.push(val);
-                el.logInput.value = '';
-                persist();
-                syncUI();
+                refs.logInput.value = '';
+                save();
+                updateUI();
             }
-        });
+        };
     }
 
-    if (el.checkAttest) {
-        el.checkAttest.addEventListener('change', (e) => {
+    if (refs.attestCheck) {
+        refs.attestCheck.onchange = (e) => {
             state.attested = e.target.checked;
-            persist();
+            save();
             if (state.attested) {
-                showAntNotification('Migration status updated to: Attested');
+                spawnNotification('Successfully Attested Migration');
             }
-        });
+        };
     }
 
-    // 5. High-end Ant Feedback
-    const showAntNotification = (message) => {
-        const notify = document.createElement('div');
-        notify.style.cssText = `
+    // 5. Feedback Notifications
+    const spawnNotification = (msg) => {
+        const n = document.createElement('div');
+        n.style.cssText = `
             position: fixed;
             top: 24px;
             right: 24px;
-            background: white;
+            background: #fff;
+            border: 1px solid #d9d9d9;
             padding: 16px 24px;
             border-radius: 2px;
-            box-shadow: 0 3px 6px -4px rgba(0,0,0,0.12), 0 6px 16px 0 rgba(0,0,0,0.08);
-            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             border-left: 4px solid #52c41a;
-            animation: antSlide 0.3s forwards;
+            animation: slideIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         `;
-        notify.innerHTML = `<span style="color:#52c41a; margin-right: 8px;">✔</span> ${message}`;
-        document.body.appendChild(notify);
+        n.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
+        document.body.appendChild(n);
         
         setTimeout(() => {
-            notify.style.animation = 'antSlideOut 0.3s forwards';
-            setTimeout(() => notify.remove(), 300);
+            n.style.animation = 'slideOut 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards';
+            setTimeout(() => n.remove(), 300);
         }, 3000);
     };
 
-    // Global Styles for Animations
-    const styleSheet = document.createElement('style');
-    styleSheet.innerHTML = `
-        @keyframes antSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes antSlideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    // Inject Animation CSS
+    const sheet = document.createElement('style');
+    sheet.innerHTML = `
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     `;
-    document.head.appendChild(styleSheet);
+    document.head.appendChild(sheet);
 
-    // Initial Sync
-    syncUI();
+    // Run initial UI sync
+    updateUI();
 });
