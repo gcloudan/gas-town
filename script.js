@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v14'; 
+    const KEY = 'istio_station_final_v15'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnScrapperMinus.onclick = () => {
             if (state.autoScrappers > 0) {
                 state.autoScrappers--;
-                state.ships += 2; // Refund 2 ships
+                // NO REFUND
                 save();
                 syncUI();
             }
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnAssemblerMinus.onclick = () => {
             if (state.autoAssemblers > 0) {
                 state.autoAssemblers--;
-                state.gateways += 2; // Refund 2 gateways
+                // NO REFUND
                 save();
                 syncUI();
             }
