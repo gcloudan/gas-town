@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v11'; 
+    const KEY = 'istio_station_final_v12'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -80,11 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Logic Sync
+        // Action states
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
         
+        // Control states
         if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
         if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
         
@@ -116,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logic implementation
     if (refs.btnCollectScrap) {
         refs.btnCollectScrap.onclick = () => {
-            state.scrap += 1; // Exactly 1 scrap, no money.
+            state.scrap += 1; // Exactly 1 scrap metal. No money.
             save();
             syncUI();
         };
@@ -216,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Auto Loop
     setInterval(() => {
         let changed = false;
         if (state.autoScrappers > 0) {
@@ -232,13 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        const demand = calculateDemand();
-        if (state.gateways > 0 && Math.random() * 100 < (demand / 10)) {
-             state.gateways--;
-             state.money += state.askingPrice;
-             changed = true;
-             notify(`Organic Sale: Gateway sold for ${state.askingPrice.toLocaleString()} Federation Credits`);
-        }
+        // NO AUTOMATIC SALES (NO AUTO-INCREMENT OF CREDITS)
 
         if (changed) {
             save();
@@ -246,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
+    // Common
     if (refs.btnInject) {
         refs.btnInject.onclick = () => {
             state.packets++;
