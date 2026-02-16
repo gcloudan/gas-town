@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_economy_v5'; // Bumped key to ensure fresh start
+    const KEY = 'istio_station_final_v10'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -31,14 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBuildShip: document.getElementById('btn-build-ship'),
         btnForgeGW: document.getElementById('btn-forge-gw'),
         btnSellGW: document.getElementById('btn-sell-gw'),
-        // Automation Nodes
         scrapperCountDisp: document.getElementById('scrapper-count-display'),
         btnScrapperMinus: document.getElementById('btn-scrapper-minus'),
         btnScrapperPlus: document.getElementById('btn-scrapper-plus'),
         assemblerCountDisp: document.getElementById('assembler-count-display'),
         btnAssemblerMinus: document.getElementById('btn-assembler-minus'),
         btnAssemblerPlus: document.getElementById('btn-assembler-plus'),
-        // Market Nodes
         askingPriceDisp: document.getElementById('asking-price-disp'),
         btnPriceMinus: document.getElementById('btn-price-minus'),
         btnPricePlus: document.getElementById('btn-price-plus'),
@@ -49,10 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const calculateDemand = () => {
-        // Base demand is 100% at $1000. Reduces as price goes up.
         const basePrice = 1000;
-        let demand = Math.max(0, 100 - (state.askingPrice - basePrice) / 20);
-        if (state.askingPrice < basePrice) demand = Math.min(200, 100 + (basePrice - state.askingPrice) / 5);
+        let demand = Math.max(0, 100 - (state.askingPrice - basePrice) / 15);
+        if (state.askingPrice < basePrice) demand = Math.min(250, 100 + (basePrice - state.askingPrice) / 4);
         return Math.round(demand);
     };
 
@@ -83,21 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Action states - Buffed economy (half as hard)
+        // Costs/Logic Sync
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
         
-        // Control states
         if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
         if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
         
         if (refs.btnScrapperMinus) refs.btnScrapperMinus.disabled = state.autoScrappers < 1;
-        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.money < 50;
+        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.scrap < 10;
         if (refs.btnAssemblerMinus) refs.btnAssemblerMinus.disabled = state.autoAssemblers < 1;
-        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.money < 200;
+        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.ships < 10;
 
-        // Market
         if (refs.askingPriceDisp) refs.askingPriceDisp.textContent = state.askingPrice.toLocaleString();
         if (refs.demandDisp) refs.demandDisp.textContent = calculateDemand();
         if (refs.btnPriceMinus) refs.btnPriceMinus.disabled = state.askingPrice <= 100;
@@ -118,10 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_asking_price', state.askingPrice);
     };
 
-    // Economy Logic
+    // Logic implementation
     if (refs.btnCollectScrap) {
         refs.btnCollectScrap.onclick = () => {
-            state.scrap += 2;
+            state.scrap += 1;
             save();
             syncUI();
         };
@@ -154,18 +149,17 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnSellGW.onclick = () => {
             if (state.gateways >= 1) {
                 state.gateways--;
-                state.money += state.askingPrice; // USES ASKING PRICE
+                state.money += state.askingPrice;
                 save();
                 syncUI();
-                notify(`Sold Gateway! +$${state.askingPrice.toLocaleString()}`);
+                notify(`Manual Sale: +$${state.askingPrice.toLocaleString()}`);
             }
         };
     }
 
-    // Market Controls
     if (refs.btnPricePlus) {
         refs.btnPricePlus.onclick = () => {
-            state.askingPrice += 50;
+            state.askingPrice += 100;
             save();
             syncUI();
         };
@@ -173,18 +167,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refs.btnPriceMinus) {
         refs.btnPriceMinus.onclick = () => {
             if (state.askingPrice > 100) {
-                state.askingPrice -= 50;
+                state.askingPrice -= 100;
                 save();
                 syncUI();
             }
         };
     }
 
-    // Upgrade Control Logic
     if (refs.btnScrapperPlus) {
         refs.btnScrapperPlus.onclick = () => {
-            if (state.money >= 50) {
-                state.money -= 50;
+            if (state.scrap >= 10) {
+                state.scrap -= 10;
                 state.autoScrappers++;
                 save();
                 syncUI();
@@ -195,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnScrapperMinus.onclick = () => {
             if (state.autoScrappers > 0) {
                 state.autoScrappers--;
-                state.money += 25; // Half refund
+                state.scrap += 5; // Refund 5
                 save();
                 syncUI();
             }
@@ -204,8 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (refs.btnAssemblerPlus) {
         refs.btnAssemblerPlus.onclick = () => {
-            if (state.money >= 200) {
-                state.money -= 200;
+            if (state.ships >= 10) {
+                state.ships -= 10;
                 state.autoAssemblers++;
                 save();
                 syncUI();
@@ -216,18 +209,17 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnAssemblerMinus.onclick = () => {
             if (state.autoAssemblers > 0) {
                 state.autoAssemblers--;
-                state.money += 100; // Half refund
+                state.ships += 5; // Refund 5
                 save();
                 syncUI();
             }
         };
     }
 
-    // Auto Loop
     setInterval(() => {
         let changed = false;
         if (state.autoScrappers > 0) {
-            state.scrap += (state.autoScrappers * 2);
+            state.scrap += state.autoScrappers;
             changed = true;
         }
         if (state.autoAssemblers > 0) {
@@ -240,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Automatic Sales based on Demand
         const demand = calculateDemand();
         if (state.gateways > 0 && Math.random() * 100 < (demand / 10)) {
              state.gateways--;
@@ -255,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 
-    // Inspector
+    // Common
     if (refs.btnInject) {
         refs.btnInject.onclick = () => {
             state.packets++;
@@ -271,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Hall of Fame
     if (refs.btnStar) {
         refs.btnStar.onclick = () => {
             state.stars++;
@@ -310,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         div.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
         document.body.appendChild(div);
-        setTimeout(() => div.remove(), 4000);
+        setTimeout(() => div.remove(), 3000);
     };
 
     syncUI();
