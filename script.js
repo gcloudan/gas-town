@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_prestige_v1'; 
+    const KEY = 'istio_station_final_v14'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -93,10 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
         if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
         
+        // UPGRADE COSTS: Ships for Scrapper, Gateways for Assembler
         if (refs.btnScrapperMinus) refs.btnScrapperMinus.disabled = state.autoScrappers < 1;
-        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.scrap < 10;
+        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.ships < 5;
         if (refs.btnAssemblerMinus) refs.btnAssemblerMinus.disabled = state.autoAssemblers < 1;
-        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.ships < 10;
+        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.gateways < 5;
 
         if (refs.askingPriceDisp) refs.askingPriceDisp.textContent = state.askingPrice.toLocaleString();
         if (refs.demandDisp) refs.demandDisp.textContent = calculateDemand();
@@ -192,10 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Auto-Scrapper Costs 5 Ships
     if (refs.btnScrapperPlus) {
         refs.btnScrapperPlus.onclick = () => {
-            if (state.scrap >= 10) {
-                state.scrap -= 10;
+            if (state.ships >= 5) {
+                state.ships -= 5;
                 state.autoScrappers++;
                 save();
                 syncUI();
@@ -206,17 +208,18 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnScrapperMinus.onclick = () => {
             if (state.autoScrappers > 0) {
                 state.autoScrappers--;
-                state.scrap += 5;
+                state.ships += 2; // Refund 2 ships
                 save();
                 syncUI();
             }
         };
     }
 
+    // Auto-Assembler Costs 5 Gateways
     if (refs.btnAssemblerPlus) {
         refs.btnAssemblerPlus.onclick = () => {
-            if (state.ships >= 10) {
-                state.ships -= 10;
+            if (state.gateways >= 5) {
+                state.gateways -= 5;
                 state.autoAssemblers++;
                 save();
                 syncUI();
@@ -227,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnAssemblerMinus.onclick = () => {
             if (state.autoAssemblers > 0) {
                 state.autoAssemblers--;
-                state.ships += 5;
+                state.gateways += 2; // Refund 2 gateways
                 save();
                 syncUI();
             }
@@ -250,14 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        const demand = calculateDemand();
-        if (state.gateways > 0 && Math.random() * 100 < (demand / 10)) {
-             state.gateways--;
-             state.money += state.askingPrice;
-             changed = true;
-             notify(`Organic Sale: Gateway sold for ${state.askingPrice.toLocaleString()} Federation Credits`);
-        }
-
         if (changed) {
             save();
             syncUI();
