@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_economy_v1';
+    const KEY = 'istio_station_economy_v2';
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
         attested: localStorage.getItem(KEY + '_attested') === 'true',
-        // Economy State
         money: parseInt(localStorage.getItem(KEY + '_money') || '0'),
         scrap: parseInt(localStorage.getItem(KEY + '_scrap') || '0'),
         ships: parseInt(localStorage.getItem(KEY + '_ships') || '0'),
@@ -65,15 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Action states
-        refs.btnBuildShip.disabled = state.scrap < 5;
-        refs.btnForgeGW.disabled = state.ships < 3;
-        refs.btnSellGW.disabled = state.gateways < 1;
-        refs.btnAutoScrapper.disabled = state.money < 100;
-        refs.btnAutoAssembler.disabled = state.money < 500;
+        // Updated Economy Logic: Half as hard
+        if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
+        if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
+        if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
+        if (refs.btnAutoScrapper) refs.btnAutoScrapper.disabled = state.money < 50;
+        if (refs.btnAutoAssembler) refs.btnAutoAssembler.disabled = state.money < 200;
 
-        refs.btnAutoScrapper.textContent = `Auto-Scrapper (${state.autoScrappers}) - $100`;
-        refs.btnAutoAssembler.textContent = `Auto-Assembler (${state.autoAssemblers}) - $500`;
+        if (refs.btnAutoScrapper) refs.btnAutoScrapper.textContent = `Auto-Scrapper (${state.autoScrappers}) - $50`;
+        if (refs.btnAutoAssembler) refs.btnAutoAssembler.textContent = `Auto-Assembler (${state.autoAssemblers}) - $200`;
 
         if (refs.packetCount) refs.packetCount.textContent = state.packets.toLocaleString();
     };
@@ -91,72 +90,85 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Economy Logic
-    refs.btnCollectScrap.onclick = () => {
-        state.scrap++;
-        state.money += 2; // Collection fee
-        save();
-        syncUI();
-    };
-
-    refs.btnBuildShip.onclick = () => {
-        if (state.scrap >= 5) {
-            state.scrap -= 5;
-            state.ships++;
+    if (refs.btnCollectScrap) {
+        refs.btnCollectScrap.onclick = () => {
+            state.scrap += 2; // Buffed
+            state.money += 10; // Buffed
             save();
             syncUI();
-        }
-    };
+        };
+    }
 
-    refs.btnForgeGW.onclick = () => {
-        if (state.ships >= 3) {
-            state.ships -= 3;
-            state.gateways++;
-            save();
-            syncUI();
-            notify('New Ingress Gateway Forged!');
-        }
-    };
+    if (refs.btnBuildShip) {
+        refs.btnBuildShip.onclick = () => {
+            if (state.scrap >= 2) {
+                state.scrap -= 2;
+                state.ships++;
+                save();
+                syncUI();
+            }
+        };
+    }
 
-    refs.btnSellGW.onclick = () => {
-        if (state.gateways >= 1) {
-            state.gateways--;
-            state.money += 500;
-            save();
-            syncUI();
-            notify('Sold Gateway to the Federation! +$500');
-        }
-    };
+    if (refs.btnForgeGW) {
+        refs.btnForgeGW.onclick = () => {
+            if (state.ships >= 2) {
+                state.ships -= 2;
+                state.gateways++;
+                save();
+                syncUI();
+                notify('New Ingress Gateway Forged!');
+            }
+        };
+    }
 
-    refs.btnAutoScrapper.onclick = () => {
-        if (state.money >= 100) {
-            state.money -= 100;
-            state.autoScrappers++;
-            save();
-            syncUI();
-        }
-    };
+    if (refs.btnSellGW) {
+        refs.btnSellGW.onclick = () => {
+            if (state.gateways >= 1) {
+                state.gateways--;
+                state.money += 1000; // Buffed
+                save();
+                syncUI();
+                notify('Sold Gateway to the Federation! +$1,000');
+            }
+        };
+    }
 
-    refs.btnAutoAssembler.onclick = () => {
-        if (state.money >= 500) {
-            state.money -= 500;
-            state.autoAssemblers++;
-            save();
-            syncUI();
-        }
-    };
+    if (refs.btnAutoScrapper) {
+        refs.btnAutoScrapper.onclick = () => {
+            if (state.money >= 50) {
+                state.money -= 50;
+                state.autoScrappers++;
+                save();
+                syncUI();
+            }
+        };
+    }
+
+    if (refs.btnAutoAssembler) {
+        refs.btnAutoAssembler.onclick = () => {
+            if (state.money >= 200) {
+                state.money -= 200;
+                state.autoAssemblers++;
+                save();
+                syncUI();
+            }
+        };
+    }
 
     // Game Loop
     setInterval(() => {
         let changed = false;
         if (state.autoScrappers > 0) {
-            state.scrap += state.autoScrappers;
+            state.scrap += (state.autoScrappers * 2);
+            state.money += (state.autoScrappers * 5);
             changed = true;
         }
         if (state.autoAssemblers > 0) {
-            const potential = Math.floor(state.scrap / 5);
+            const potential = Math.floor(state.scrap / 2);
             const toBuild = Math.min(potential, state.autoAssemblers);
             if (toBuild > 0) {
-                state.scrap -= (toBuild * 5);
+                state.scrap -= (toBuild * 2);
                 state.ships += toBuild;
                 changed = true;
             }
@@ -168,42 +180,52 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 
     // Inspector
-    refs.btnInject.onclick = () => {
-        state.packets++;
-        syncUI();
-        const p = document.createElement('div');
-        p.className = 'packet';
-        p.style.left = '0%';
-        p.style.top = Math.random() * 90 + '%';
-        refs.simCanvas.appendChild(p);
-        p.animate([
-            { left: '0%', opacity: 1 },
-            { left: '100%', opacity: 1 }
-        ], { duration: 1500 }).onfinish = () => p.remove();
-    };
+    if (refs.btnInject) {
+        refs.btnInject.onclick = () => {
+            state.packets++;
+            syncUI();
+            const p = document.createElement('div');
+            p.className = 'packet';
+            p.style.left = '0%';
+            p.style.top = Math.random() * 90 + '%';
+            if (refs.simCanvas) {
+                refs.simCanvas.appendChild(p);
+                p.animate([
+                    { left: '0%', opacity: 1 },
+                    { left: '100%', opacity: 1 }
+                ], { duration: 1500 }).onfinish = () => p.remove();
+            }
+        };
+    }
 
     // Hall of Fame
-    refs.btnStar.onclick = () => {
-        state.stars++;
-        save();
-        syncUI();
-    };
-
-    refs.btnPost.onclick = () => {
-        const val = refs.logInput.value.trim();
-        if (val) {
-            state.logs.push(val);
-            refs.logInput.value = '';
+    if (refs.btnStar) {
+        refs.btnStar.onclick = () => {
+            state.stars++;
             save();
             syncUI();
-        }
-    };
+        };
+    }
 
-    refs.attestCheck.onchange = (e) => {
-        state.attested = e.target.checked;
-        save();
-        if (state.attested) notify('Orbital Parity Achieved');
-    };
+    if (refs.btnPost) {
+        refs.btnPost.onclick = () => {
+            const val = refs.logInput.value.trim();
+            if (val) {
+                state.logs.push(val);
+                refs.logInput.value = '';
+                save();
+                syncUI();
+            }
+        };
+    }
+
+    if (refs.attestCheck) {
+        refs.attestCheck.onchange = (e) => {
+            state.attested = e.target.checked;
+            save();
+            if (state.attested) notify('Orbital Parity Achieved');
+        };
+    }
 
     const notify = (msg) => {
         const div = document.createElement('div');
@@ -218,5 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => div.remove(), 4000);
     };
 
+    // Initial Sync
     syncUI();
 });
