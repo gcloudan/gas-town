@@ -1,142 +1,142 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initial State
-    const STORAGE_KEY = 'vanguard_v5_data';
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    
+    // 1. Precise State Management
+    const KEY = 'vanguard_ant_v1';
+    const raw = localStorage.getItem(KEY);
     let state = {
         stars: 0,
         logs: [],
         attested: false
     };
 
-    if (savedData) {
+    if (raw) {
         try {
-            state = JSON.parse(savedData);
+            state = JSON.parse(raw);
         } catch (e) {
-            console.error('State parse failed', e);
+            console.warn('State recovery failed');
         }
     }
 
-    // 2. Element References
-    const refs = {
-        starLabel: document.getElementById('star-count-label'),
-        starField: document.getElementById('star-field-display'),
-        logInput: document.getElementById('log-message'),
-        submitBtn: document.getElementById('submit-log'),
-        starBtn: document.getElementById('award-star-btn'),
-        attestCheck: document.getElementById('attestation-box'),
-        logsList: document.getElementById('migration-logs')
+    // 2. DOM Selection with Strict IDs
+    const nodes = {
+        starValue: document.getElementById('star-count-value'),
+        starField: document.getElementById('star-field'),
+        logInput: document.getElementById('log-entry-input'),
+        btnTransmit: document.getElementById('btn-transmit-log'),
+        btnAwardStar: document.getElementById('btn-award-star'),
+        checkbox: document.getElementById('attest-checkbox'),
+        timeline: document.getElementById('migration-timeline')
     };
 
-    // 3. UI Synchronization
-    const updateUI = () => {
-        // Update Star Label
-        if (refs.starLabel) {
-            refs.starLabel.textContent = `${state.stars} Star${state.stars === 1 ? '' : 's'} Collected`;
+    // 3. UI Sync Logic
+    const sync = () => {
+        // Stats
+        if (nodes.starValue) {
+            nodes.starValue.textContent = state.stars.toLocaleString();
         }
 
-        // Update Star Field
-        if (refs.starField) {
-            refs.starField.innerHTML = '';
-            // Display limit to 150 stars
-            const count = Math.min(state.stars, 150);
-            for (let i = 0; i < count; i++) {
+        // Star Field
+        if (nodes.starField) {
+            nodes.starField.innerHTML = '';
+            const visualLimit = Math.min(state.stars, 120);
+            for (let i = 0; i < visualLimit; i++) {
                 const s = document.createElement('span');
                 s.textContent = '⭐';
-                refs.starField.appendChild(s);
+                s.style.animation = 'antPop 0.3s cubic-bezier(0.12, 0.4, 0.29, 1.46)';
+                nodes.starField.appendChild(s);
             }
         }
 
-        // Update Logs
-        if (refs.logsList) {
-            refs.logsList.innerHTML = '';
-            [...state.logs].reverse().forEach(text => {
+        // Timeline
+        if (nodes.timeline) {
+            nodes.timeline.innerHTML = '';
+            // Show latest logs first
+            [...state.logs].reverse().forEach(entry => {
                 const div = document.createElement('div');
-                div.className = 'timeline-entry';
-                div.textContent = text;
-                refs.logsList.appendChild(div);
+                div.className = 'ant-timeline-item';
+                div.textContent = entry;
+                nodes.timeline.appendChild(div);
             });
         }
 
-        // Sync Checkbox
-        if (refs.attestCheck) {
-            refs.attestCheck.checked = state.attested;
+        // Checkbox
+        if (nodes.checkbox) {
+            nodes.checkbox.checked = state.attested;
         }
     };
 
-    const save = () => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const persist = () => {
+        localStorage.setItem(KEY, JSON.stringify(state));
     };
 
-    // 4. Interaction Logic
-    if (refs.starBtn) {
-        refs.starBtn.onclick = (e) => {
+    // 4. Action Bindings
+    if (nodes.btnAwardStar) {
+        nodes.btnAwardStar.addEventListener('click', (e) => {
             e.preventDefault();
             state.stars++;
-            save();
-            updateUI();
-        };
+            persist();
+            sync();
+        });
     }
 
-    if (refs.submitBtn) {
-        refs.submitBtn.onclick = (e) => {
+    if (nodes.btnTransmit) {
+        nodes.btnTransmit.addEventListener('click', (e) => {
             e.preventDefault();
-            const val = refs.logInput.value.trim();
-            if (val) {
-                state.logs.push(val);
-                refs.logInput.value = '';
-                save();
-                updateUI();
+            const text = nodes.logInput.value.trim();
+            if (text) {
+                state.logs.push(text);
+                nodes.logInput.value = '';
+                persist();
+                sync();
             }
-        };
+        });
     }
 
-    if (refs.attestCheck) {
-        refs.attestCheck.onchange = (e) => {
+    if (nodes.checkbox) {
+        nodes.checkbox.addEventListener('change', (e) => {
             state.attested = e.target.checked;
-            save();
+            persist();
             if (state.attested) {
-                spawnNotification('Successfully Attested Migration');
+                notify('Successfully Attested Migration Status');
             }
-        };
+        });
     }
 
-    // 5. Feedback Notifications
-    const spawnNotification = (msg) => {
-        const n = document.createElement('div');
-        n.style.cssText = `
+    // 5. Ant Design Feedback (Notification)
+    const notify = (msg) => {
+        const div = document.createElement('div');
+        div.style.cssText = `
             position: fixed;
             top: 24px;
             right: 24px;
             background: #fff;
-            border: 1px solid #d9d9d9;
             padding: 16px 24px;
             border-radius: 2px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 3px 6px -4px rgba(0,0,0,0.12), 0 6px 16px 0 rgba(0,0,0,0.08);
             z-index: 9999;
+            border-left: 4px solid #52c41a;
+            animation: antSlideIn 0.3s forwards;
             display: flex;
             align-items: center;
             gap: 12px;
-            border-left: 4px solid #52c41a;
-            animation: slideIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         `;
-        n.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
-        document.body.appendChild(n);
+        div.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
+        document.body.appendChild(div);
         
         setTimeout(() => {
-            n.style.animation = 'slideOut 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards';
-            setTimeout(() => n.remove(), 300);
+            div.style.animation = 'antSlideOut 0.3s forwards';
+            setTimeout(() => div.remove(), 300);
         }, 3000);
     };
 
-    // Inject Animation CSS
-    const sheet = document.createElement('style');
-    sheet.innerHTML = `
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    // Inject Runtime Styles
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes antPop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes antSlideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes antSlideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
     `;
-    document.head.appendChild(sheet);
+    document.head.appendChild(style);
 
-    // Run initial UI sync
-    updateUI();
+    // Initial Sync
+    sync();
 });
