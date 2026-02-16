@@ -3,52 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Istio Ingress Gateway Migration | Ant Design</title>
+    <title>Istio Nexus | The Future of Traffic</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://images.unsplash.com/photo-1635339001026-68661005ab4c?q=80&w=32&auto=format&fit=crop" type="image/x-icon">
 </head>
 <body class="ant-layout">
+    <div id="traffic-canvas-container"></div>
     <header class="ant-header">
         <div class="ant-container header-flex">
-            <div class="ant-logo">ISTIO VANGUARD</div>
-            <ul class="ant-menu">
-                <li class="ant-menu-item active">Migration Guide</li>
-                <li class="ant-menu-item">Architecture</li>
-            </ul>
+            <div class="ant-logo">ISTIO NEXUS</div>
+            <nav class="ant-nav">
+                <a href="#motivation" class="ant-nav-link">Motivation</a>
+                <a href="#architecture" class="ant-nav-link">Architecture</a>
+                <a href="#simulator" class="ant-nav-link">Simulator</a>
+                <a href="#hall-of-fame" class="ant-nav-link">Hall of Fame</a>
+            </nav>
         </div>
     </header>
 
     <main class="ant-content">
         <div class="ant-container">
-            <div class="ant-page-header">
-                <h1 class="ant-title">🚀 Istio Ingress Gateway Migration</h1>
-                <div class="ant-psa">
-                    <span class="ant-tag-red">CRITICAL PSA</span>
-                    <span class="psa-text">Traditional Kubernetes Ingress controllers reach <strong>End of Life (EOL) in March 2026</strong>. Transition to Istio Ingress Gateway is mandatory.</span>
-                </div>
-            </div>
-
-            <div class="ant-card">
-                <div class="ant-card-head">The Evolution: Why Istio Ingress Gateway?</div>
-                <div class="ant-card-body">
-                    <p class="hero-text">Moving beyond NGINX Ingress is like upgrading from a reliable sedan to a futuristic starship. Here's why Istio wins:</p>
-                    <div class="ant-row">
-                        <div class="ant-col">
-                            <ul class="ant-list">
-                                <li><strong>Unified Control Plane:</strong> Single point of management for security and traffic.</li>
-                                <li><strong>Advanced Traffic Steering:</strong> Native support for Canary and Blue/Green.</li>
-                            </ul>
-                        </div>
-                        <div class="ant-col">
-                            <ul class="ant-list">
-                                <li><strong>mTLS Everywhere:</strong> Built-in zero-trust encryption.</li>
-                                <li><strong>L7 Observability:</strong> Deep request insights without sidecar injection.</li>
-                            </ul>
-                        </div>
+            <div class="hero-section">
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop" alt="Nexus Header" class="hero-image">
+                <div class="hero-content">
+                    <h1 class="ant-title">🚀 Gateway to the Future</h1>
+                    <div class="ant-psa">
+                        <span class="ant-tag-red">CRITICAL PSA</span>
+                        <span class="psa-text">Legacy Ingress Controllers reach <strong>EOL in March 2026</strong>. Transition to Istio Nexus is mandatory.</span>
                     </div>
                 </div>
             </div>
 
-            <div class="ant-card">
+            <section id="motivation" class="ant-card">
+                <div class="ant-card-head">The Evolution: Why Nexus?</div>
+                <div class="ant-card-body">
+                    <p class="hero-text">Moving beyond NGINX Ingress is like upgrading from a reliable sedan to a futuristic starship. Here's why Istio wins:</p>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🛰️</div>
+                            <h4>Unified Control</h4>
+                            <p>Single point of management for security and traffic.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h4>Advanced Steering</h4>
+                            <p>Native support for Canary and Blue/Green.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🛡️</div>
+                            <h4>mTLS Everywhere</h4>
+                            <p>Built-in zero-trust encryption.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👁️</div>
+                            <h4>L7 Observability</h4>
+                            <p>Deep request insights without sidecar injection.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="architecture" class="ant-card">
                 <div class="ant-card-head">Architectural Patterns: Shared vs. Dedicated</div>
                 <div class="ant-card-body">
                     <div class="arch-container">
@@ -119,12 +134,26 @@
                     </div>
                 </div>
 
-                <div class="ant-card">
-                    <div class="ant-card-head">Migration Hall of Fame</div>
+                <section id="simulator" class="ant-card">
+                    <div class="ant-card-head">Nexus Traffic Simulator</div>
+                    <div class="ant-card-body">
+                        <p>Inject packets and watch them warp through the Nexus Gateway.</p>
+                        <div class="simulator-container">
+                            <div id="sim-canvas"></div>
+                            <div class="sim-controls">
+                                <button id="btn-inject" class="ant-btn-primary">Inject Traffic Packet</button>
+                                <div id="sim-stats">Packets Routed: <span id="packet-count">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="hall-of-fame" class="ant-card">
+                    <div class="ant-card-head">Nexus Hall of Fame</div>
                     <div class="ant-card-body">
                         <div class="fame-header">
                             <div class="ant-stat">
-                                <div class="ant-stat-title">Successful Migrations</div>
+                                <div class="ant-stat-title">Nexus Transitions</div>
                                 <div class="ant-stat-value"><span id="star-count">0</span> ⭐</div>
                             </div>
                             <div id="star-field" class="star-field"></div>
@@ -132,13 +161,13 @@
 
                         <div class="ant-form">
                             <div class="ant-input-search">
-                                <input type="text" id="log-input" placeholder="Enter migration log entry..." class="ant-input">
+                                <input type="text" id="log-input" placeholder="Transmit your frequency..." class="ant-input">
                                 <button id="btn-post" class="ant-btn-primary">Transmit</button>
                             </div>
                             <div class="ant-footer-row">
                                 <label class="ant-checkbox-wrap">
                                     <input type="checkbox" id="attest-check">
-                                    <span>I attest that I have successfully migrated.</span>
+                                    <span>I attest that I have achieved Nexus parity.</span>
                                 </label>
                                 <button id="btn-star" class="ant-btn-ghost">✨ Award Star</button>
                             </div>
@@ -155,7 +184,7 @@
 
     <footer class="ant-footer">
         <div class="ant-container">
-            Istio Vanguard ©2026 Engineering • EOL March 2026
+            Istio Nexus ©2026 Engineering Operations Center • EOL March 2026 Threshold
         </div>
     </footer>
 
