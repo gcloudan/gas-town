@@ -321,6 +321,22 @@ body {
     gap: 12px;
 }
 
+.market-control {
+    background: white;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.market-info, .demand-info {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
 .upgrade-row {
     display: flex;
     justify-content: space-between;
@@ -349,6 +365,7 @@ body {
     border-radius: var(--radius);
     overflow: hidden;
     align-items: center;
+    justify-content: center;
 }
 
 .ant-btn-small {

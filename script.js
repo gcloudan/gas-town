@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v7';
+    const KEY = 'istio_station_economy_v5'; // Bumped key to ensure fresh start
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gateways: parseInt(localStorage.getItem(KEY + '_gateways') || '0'),
         autoScrappers: parseInt(localStorage.getItem(KEY + '_auto_scrappers') || '0'),
         autoAssemblers: parseInt(localStorage.getItem(KEY + '_auto_assemblers') || '0'),
+        askingPrice: parseInt(localStorage.getItem(KEY + '_asking_price') || '1000'),
         packets: 0
     };
 
@@ -30,16 +31,29 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBuildShip: document.getElementById('btn-build-ship'),
         btnForgeGW: document.getElementById('btn-forge-gw'),
         btnSellGW: document.getElementById('btn-sell-gw'),
-        // Control Group Nodes
+        // Automation Nodes
         scrapperCountDisp: document.getElementById('scrapper-count-display'),
         btnScrapperMinus: document.getElementById('btn-scrapper-minus'),
         btnScrapperPlus: document.getElementById('btn-scrapper-plus'),
         assemblerCountDisp: document.getElementById('assembler-count-display'),
         btnAssemblerMinus: document.getElementById('btn-assembler-minus'),
         btnAssemblerPlus: document.getElementById('btn-assembler-plus'),
+        // Market Nodes
+        askingPriceDisp: document.getElementById('asking-price-disp'),
+        btnPriceMinus: document.getElementById('btn-price-minus'),
+        btnPricePlus: document.getElementById('btn-price-plus'),
+        demandDisp: document.getElementById('demand-disp'),
         btnInject: document.getElementById('btn-inject'),
         packetCount: document.getElementById('packet-count'),
         simCanvas: document.getElementById('sim-canvas')
+    };
+
+    const calculateDemand = () => {
+        // Base demand is 100% at $1000. Reduces as price goes up.
+        const basePrice = 1000;
+        let demand = Math.max(0, 100 - (state.askingPrice - basePrice) / 20);
+        if (state.askingPrice < basePrice) demand = Math.min(200, 100 + (basePrice - state.askingPrice) / 5);
+        return Math.round(demand);
     };
 
     const syncUI = () => {
@@ -69,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Action states
+        // Action states - Buffed economy (half as hard)
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
@@ -82,6 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.money < 50;
         if (refs.btnAssemblerMinus) refs.btnAssemblerMinus.disabled = state.autoAssemblers < 1;
         if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.money < 200;
+
+        // Market
+        if (refs.askingPriceDisp) refs.askingPriceDisp.textContent = state.askingPrice.toLocaleString();
+        if (refs.demandDisp) refs.demandDisp.textContent = calculateDemand();
+        if (refs.btnPriceMinus) refs.btnPriceMinus.disabled = state.askingPrice <= 100;
 
         if (refs.packetCount) refs.packetCount.textContent = state.packets.toLocaleString();
     };
@@ -96,86 +115,119 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_gateways', state.gateways);
         localStorage.setItem(KEY + '_auto_scrappers', state.autoScrappers);
         localStorage.setItem(KEY + '_auto_assemblers', state.autoAssemblers);
+        localStorage.setItem(KEY + '_asking_price', state.askingPrice);
     };
 
     // Economy Logic
-    refs.btnCollectScrap.onclick = () => {
-        state.scrap += 2;
-        state.money += 10;
-        save();
-        syncUI();
-    };
-
-    refs.btnBuildShip.onclick = () => {
-        if (state.scrap >= 2) {
-            state.scrap -= 2;
-            state.ships++;
+    if (refs.btnCollectScrap) {
+        refs.btnCollectScrap.onclick = () => {
+            state.scrap += 2;
             save();
             syncUI();
-        }
-    };
+        };
+    }
 
-    refs.btnForgeGW.onclick = () => {
-        if (state.ships >= 2) {
-            state.ships -= 2;
-            state.gateways++;
+    if (refs.btnBuildShip) {
+        refs.btnBuildShip.onclick = () => {
+            if (state.scrap >= 2) {
+                state.scrap -= 2;
+                state.ships++;
+                save();
+                syncUI();
+            }
+        };
+    }
+
+    if (refs.btnForgeGW) {
+        refs.btnForgeGW.onclick = () => {
+            if (state.ships >= 2) {
+                state.ships -= 2;
+                state.gateways++;
+                save();
+                syncUI();
+                notify('New Ingress Gateway Forged!');
+            }
+        };
+    }
+
+    if (refs.btnSellGW) {
+        refs.btnSellGW.onclick = () => {
+            if (state.gateways >= 1) {
+                state.gateways--;
+                state.money += state.askingPrice; // USES ASKING PRICE
+                save();
+                syncUI();
+                notify(`Sold Gateway! +$${state.askingPrice.toLocaleString()}`);
+            }
+        };
+    }
+
+    // Market Controls
+    if (refs.btnPricePlus) {
+        refs.btnPricePlus.onclick = () => {
+            state.askingPrice += 50;
             save();
             syncUI();
-            notify('New Ingress Gateway Forged!');
-        }
-    };
-
-    refs.btnSellGW.onclick = () => {
-        if (state.gateways >= 1) {
-            state.gateways--;
-            state.money += 1000;
-            save();
-            syncUI();
-            notify('Sold Gateway! +$1,000');
-        }
-    };
+        };
+    }
+    if (refs.btnPriceMinus) {
+        refs.btnPriceMinus.onclick = () => {
+            if (state.askingPrice > 100) {
+                state.askingPrice -= 50;
+                save();
+                syncUI();
+            }
+        };
+    }
 
     // Upgrade Control Logic
-    refs.btnScrapperPlus.onclick = () => {
-        if (state.money >= 50) {
-            state.money -= 50;
-            state.autoScrappers++;
-            save();
-            syncUI();
-        }
-    };
-    refs.btnScrapperMinus.onclick = () => {
-        if (state.autoScrappers > 0) {
-            state.autoScrappers--;
-            state.money += 25; // Half refund
-            save();
-            syncUI();
-        }
-    };
+    if (refs.btnScrapperPlus) {
+        refs.btnScrapperPlus.onclick = () => {
+            if (state.money >= 50) {
+                state.money -= 50;
+                state.autoScrappers++;
+                save();
+                syncUI();
+            }
+        };
+    }
+    if (refs.btnScrapperMinus) {
+        refs.btnScrapperMinus.onclick = () => {
+            if (state.autoScrappers > 0) {
+                state.autoScrappers--;
+                state.money += 25; // Half refund
+                save();
+                syncUI();
+            }
+        };
+    }
 
-    refs.btnAssemblerPlus.onclick = () => {
-        if (state.money >= 200) {
-            state.money -= 200;
-            state.autoAssemblers++;
-            save();
-            syncUI();
-        }
-    };
-    refs.btnAssemblerMinus.onclick = () => {
-        if (state.autoAssemblers > 0) {
-            state.autoAssemblers--;
-            state.money += 100; // Half refund
-            save();
-            syncUI();
-        }
-    };
+    if (refs.btnAssemblerPlus) {
+        refs.btnAssemblerPlus.onclick = () => {
+            if (state.money >= 200) {
+                state.money -= 200;
+                state.autoAssemblers++;
+                save();
+                syncUI();
+            }
+        };
+    }
+    if (refs.btnAssemblerMinus) {
+        refs.btnAssemblerMinus.onclick = () => {
+            if (state.autoAssemblers > 0) {
+                state.autoAssemblers--;
+                state.money += 100; // Half refund
+                save();
+                syncUI();
+            }
+        };
+    }
 
     // Auto Loop
     setInterval(() => {
         let changed = false;
         if (state.autoScrappers > 0) {
             state.scrap += (state.autoScrappers * 2);
-            state.money += (state.autoScrappers * 5);
             changed = true;
         }
         if (state.autoAssemblers > 0) {
@@ -187,6 +239,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 changed = true;
             }
         }
+        
+        // Automatic Sales based on Demand
+        const demand = calculateDemand();
+        if (state.gateways > 0 && Math.random() * 100 < (demand / 10)) {
+             state.gateways--;
+             state.money += state.askingPrice;
+             changed = true;
+             notify(`Organic Sale: Gateway sold for $${state.askingPrice.toLocaleString()}`);
+        }
+
         if (changed) {
             save();
             syncUI();
@@ -194,41 +256,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 
     // Inspector
-    refs.btnInject.onclick = () => {
-        state.packets++;
-        syncUI();
-        const p = document.createElement('div');
-        p.className = 'packet';
-        p.style.left = '0%';
-        p.style.top = Math.random() * 90 + '%';
-        if (refs.simCanvas) {
-            refs.simCanvas.appendChild(p);
-            p.animate([{ left: '0%', opacity: 1 }, { left: '100%', opacity: 1 }], 1500).onfinish = () => p.remove();
-        }
-    };
+    if (refs.btnInject) {
+        refs.btnInject.onclick = () => {
+            state.packets++;
+            syncUI();
+            const p = document.createElement('div');
+            p.className = 'packet';
+            p.style.left = '0%';
+            p.style.top = Math.random() * 90 + '%';
+            if (refs.simCanvas) {
+                refs.simCanvas.appendChild(p);
+                p.animate([{ left: '0%', opacity: 1 }, { left: '100%', opacity: 1 }], 1500).onfinish = () => p.remove();
+            }
+        };
+    }
 
     // Hall of Fame
-    refs.btnStar.onclick = () => {
-        state.stars++;
-        save();
-        syncUI();
-    };
-
-    refs.btnPost.onclick = () => {
-        const val = refs.logInput.value.trim();
-        if (val) {
-            state.logs.push(val);
-            refs.logInput.value = '';
+    if (refs.btnStar) {
+        refs.btnStar.onclick = () => {
+            state.stars++;
             save();
             syncUI();
-        }
-    };
+        };
+    }
 
-    refs.attestCheck.onchange = (e) => {
-        state.attested = e.target.checked;
-        save();
-        if (state.attested) notify('Orbital Parity Achieved');
-    };
+    if (refs.btnPost) {
+        refs.btnPost.onclick = () => {
+            const val = refs.logInput.value.trim();
+            if (val) {
+                state.logs.push(val);
+                refs.logInput.value = '';
+                save();
+                syncUI();
+            }
+        };
+    }
+
+    if (refs.attestCheck) {
+        refs.attestCheck.onchange = (e) => {
+            state.attested = e.target.checked;
+            save();
+            if (state.attested) notify('Orbital Parity Achieved');
+        };
+    }
 
     const notify = (msg) => {
         const div = document.createElement('div');

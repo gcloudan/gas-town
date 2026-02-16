@@ -154,11 +154,11 @@
             <section id="shipyard" class="ant-card">
                 <div class="ant-card-head">Orbital Shipyard & Gateway Forge</div>
                 <div class="ant-card-body">
-                    <p>Build your Istio fleet to secure the quadrant. Spaceships represent pods; Gateways represent deployments.</p>
+                    <p>Manage your fleet production. Adjust asking price to influence market demand.</p>
                     <div class="shipyard-grid">
                         <div class="shipyard-stats">
                             <div class="stat-box money-highlight">
-                                <div class="stat-label">Federation Credits</div>
+                                <div class="stat-label">Credits ($)</div>
                                 <div class="stat-value">$<span id="money-count">0</span></div>
                             </div>
                             <div class="stat-box">
@@ -175,10 +175,25 @@
                             </div>
                         </div>
                         <div class="shipyard-actions">
-                            <button id="btn-collect-scrap" class="ant-btn-primary">Collect Scrap (+$10)</button>
+                            <button id="btn-collect-scrap" class="ant-btn-primary">Collect Scrap Metal</button>
                             <button id="btn-build-ship" class="ant-btn-ghost">Assemble Ship (2 Scrap)</button>
                             <button id="btn-forge-gw" class="ant-btn-ghost">Forge Gateway (2 Ships)</button>
-                            <button id="btn-sell-gw" class="ant-btn-primary" style="background:#52c41a; border-color:#52c41a;">Sell Gateway (+$1,000)</button>
+                            
+                            <div class="market-control">
+                                <div class="market-info">
+                                    <span class="label">Asking Price:</span>
+                                    <span class="value">$<span id="asking-price-disp">1000</span></span>
+                                </div>
+                                <div class="ant-btn-group">
+                                    <button id="btn-price-minus" class="ant-btn-small">-</button>
+                                    <button id="btn-price-plus" class="ant-btn-small">+</button>
+                                </div>
+                                <div class="demand-info">
+                                    <span class="label">Demand:</span>
+                                    <span class="value"><span id="demand-disp">100</span>%</span>
+                                </div>
+                            </div>
+                            <button id="btn-sell-gw" class="ant-btn-primary" style="background:#52c41a; border-color:#52c41a;">Sell Gateway Now</button>
                         </div>
                         <div class="shipyard-upgrades">
                             <div class="upgrade-row">
