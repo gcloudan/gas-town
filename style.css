@@ -1,4 +1,4 @@
-/* Istio Nexus - Ant Design + Creative Flair */
+/* Istio Space Station - Pure Ant Design + Idle Game */
 :root {
     --primary: #1890ff;
     --primary-hover: #40a9ff;
@@ -34,18 +34,6 @@ body {
     padding: 0 24px;
 }
 
-/* Traffic Canvas */
-#traffic-canvas-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.1;
-}
-
 /* Header */
 .ant-header {
     background: var(--header-bg);
@@ -63,13 +51,22 @@ body {
     align-items: center;
 }
 
+.brand-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.station-icon {
+    width: 32px;
+    height: 32px;
+    color: var(--primary);
+}
+
 .ant-logo {
     font-weight: 800;
-    font-size: 1.5rem;
-    letter-spacing: 2px;
-    background: linear-gradient(90deg, #1890ff, #722ed1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 1.25rem;
+    letter-spacing: 1px;
 }
 
 .ant-nav a {
@@ -83,16 +80,15 @@ body {
 
 .ant-nav a:hover {
     color: white;
-    transform: translateY(-1px);
 }
 
 /* Hero Section */
 .hero-section {
     position: relative;
-    height: 300px;
+    height: 350px;
     margin-bottom: 48px;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,16 +99,16 @@ body {
 .hero-image {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    object-fit: crop;
+    object-fit: cover;
     z-index: -1;
-    filter: brightness(0.6);
+    filter: brightness(0.5);
 }
 
 .ant-title {
-    font-size: 48px;
+    font-size: 42px;
     margin: 0 0 16px 0;
     font-weight: 800;
-    letter-spacing: -2px;
+    letter-spacing: -1px;
     color: white;
 }
 
@@ -121,7 +117,7 @@ body {
     align-items: center;
     gap: 12px;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 8px 16px;
     border-radius: var(--radius);
@@ -146,13 +142,7 @@ body {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     margin-bottom: 32px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.ant-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .ant-card-head {
@@ -162,7 +152,7 @@ body {
     align-items: center;
     border-bottom: 1px solid var(--border);
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
     background: #fafafa;
 }
 
@@ -175,16 +165,16 @@ body {
 
 .feature-card {
     padding: 24px;
-    background: #fafafa;
+    background: white;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 4px;
     text-align: center;
     transition: all 0.3s;
 }
 
 .feature-card:hover {
-    background: white;
     border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.08);
 }
 
 .feature-icon {
@@ -197,39 +187,50 @@ body {
     color: var(--primary);
 }
 
-/* Simulator */
-.simulator-container {
-    background: #001529;
+/* Shipyard Game */
+.shipyard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    background: #fafafa;
     padding: 24px;
-    border-radius: 8px;
-    margin-top: 16px;
+    border-radius: 4px;
 }
 
-#sim-canvas {
-    height: 150px;
-    border: 1px solid rgba(255,255,255,0.1);
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
+.shipyard-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.sim-controls {
+.stat-box {
+    background: white;
+    padding: 12px 20px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    color: white;
 }
 
-.packet {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--primary);
-    box-shadow: 0 0 10px var(--primary);
+.stat-label {
+    font-weight: 600;
+    color: var(--text-sec);
 }
 
-/* Shared/Dedicated Diagrams */
+.stat-value {
+    font-weight: 800;
+    color: var(--primary);
+    font-family: monospace;
+    font-size: 1.1rem;
+}
+
+.shipyard-actions, .shipyard-upgrades {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Architecture Diagrams */
 .arch-container {
     display: flex;
     gap: 48px;
@@ -246,10 +247,50 @@ body {
 
 .diagram-wrap {
     margin-top: 24px;
-    background: #fafafa;
+    background: white;
     border: 1px solid var(--border);
     padding: 16px;
     border-radius: 4px;
+}
+
+/* Buttons */
+.ant-btn-primary {
+    background: var(--primary);
+    color: white;
+    border: 1px solid var(--primary);
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    font-weight: 500;
+}
+
+.ant-btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.ant-btn-primary:disabled {
+    background: #d9d9d9;
+    border-color: #d9d9d9;
+    cursor: not-allowed;
+}
+
+.ant-btn-ghost {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.3s;
+}
+
+.ant-btn-ghost:hover:not(:disabled) {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.ant-btn-ghost:disabled {
+    color: #bfbfbf;
+    cursor: not-allowed;
 }
 
 /* Timeline */
@@ -276,47 +317,9 @@ body {
     border-radius: 50%;
 }
 
-/* Buttons & Inputs */
-.ant-btn-primary {
-    background: var(--primary);
-    color: white;
-    border: 1px solid var(--primary);
-    padding: 8px 24px;
-    cursor: pointer;
-    border-radius: var(--radius);
-    font-weight: 600;
-    transition: all 0.3s;
-}
-
-.ant-btn-primary:hover {
-    background: var(--primary-hover);
-    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
-}
-
-.ant-btn-ghost {
-    background: white;
-    border: 1px solid var(--border);
-    padding: 8px 16px;
-    cursor: pointer;
-    border-radius: var(--radius);
-}
-
-.ant-btn-ghost:hover {
-    color: var(--primary);
-    border-color: var(--primary);
-}
-
-.ant-input {
-    flex: 1;
-    border: 1px solid var(--border);
-    padding: 10px 16px;
-    outline: none;
-    border-radius: var(--radius);
-}
-
 /* Footer */
 .ant-footer {
-    padding: 64px 0;
+    padding: 48px 0;
     background: #fafafa;
     border-top: 1px solid var(--border);
     text-align: center;
@@ -324,6 +327,6 @@ body {
 }
 
 @media (max-width: 768px) {
-    .ant-row, .arch-container, .feature-grid { flex-direction: column; }
+    .ant-row, .arch-container, .feature-grid, .shipyard-grid { flex-direction: column; }
     .border-left { border-left: none; padding-left: 0; padding-top: 32px; border-top: 1px solid var(--border); }
 }
