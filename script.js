@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_economy_v3';
+    // Using a new key version to clear any stale logic/state
+    const KEY = 'istio_station_final_v5';
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Updated Economy Logic: Half as hard
+        // Action states - Buffed economy (half as hard)
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_auto_assemblers', state.autoAssemblers);
     };
 
-    // Economy Logic
+    // Robust Economy Logic
     if (refs.btnCollectScrap) {
         refs.btnCollectScrap.onclick = () => {
             state.scrap += 2;
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refs.btnBuildShip) {
         refs.btnBuildShip.onclick = () => {
             if (state.scrap >= 2) {
-                state.scrap -= 2;
+                state.scrap -= 2; // Fixed: Taking only 2 scrap
                 state.ships++;
                 save();
                 syncUI();
@@ -156,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Game Loop
+    // Auto Loop
     setInterval(() => {
         let changed = false;
         if (state.autoScrappers > 0) {
@@ -190,10 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             p.style.top = Math.random() * 90 + '%';
             if (refs.simCanvas) {
                 refs.simCanvas.appendChild(p);
-                p.animate([
-                    { left: '0%', opacity: 1 },
-                    { left: '100%', opacity: 1 }
-                ], { duration: 1500 }).onfinish = () => p.remove();
+                p.animate([{ left: '0%', opacity: 1 }, { left: '100%', opacity: 1 }], 1500).onfinish = () => p.remove();
             }
         };
     }
@@ -240,6 +238,5 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => div.remove(), 4000);
     };
 
-    // Initial Sync
     syncUI();
 });
