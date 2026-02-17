@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v25'; 
+    const KEY = 'istio_station_final_v30'; // Reset for clean logic
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -56,24 +56,37 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.round(demand);
     };
 
-    // Notification Stacking System
+    // Stacking Notification System with Types
     let activeNotifications = [];
-    const notify = (msg, isPrestige = false) => {
+    const notify = (msg, type = 'success') => {
         const div = document.createElement('div');
-        div.className = isPrestige ? 'ant-notify prestige-special' : 'ant-notify';
+        div.className = `ant-notify notify-${type}`;
         
         const index = activeNotifications.length;
-        const topOffset = 24 + (index * 80);
+        const topOffset = 24 + (index * 85);
         
+        let borderColor = '#52c41a';
+        let icon = '✔';
+        let textColor = 'inherit';
+
+        if (type === 'error') {
+            borderColor = '#ff4d4f';
+            icon = '✖';
+        } else if (type === 'prestige') {
+            borderColor = '#722ed1';
+            icon = '🎖️';
+        }
+
         div.style.cssText = `
             position: fixed; top: ${topOffset}px; right: 24px; background: #fff;
             padding: 16px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            z-index: 2000; border-left: 4px solid ${isPrestige ? '#722ed1' : '#52c41a'}; border-radius: 2px;
+            z-index: 2000; border-left: 4px solid ${borderColor}; border-radius: 2px;
             animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             display: flex; align-items: center; gap: 12px;
+            min-width: 250px;
         `;
 
-        if (isPrestige) {
+        if (type === 'prestige') {
             const quips = [
                 "Go back to work, space cadet.",
                 "Touch some grass... if you can find any in orbit.",
@@ -83,11 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Great, another medal to collect space-dust."
             ];
             const quip = quips[Math.floor(Math.random() * quips.length)];
-            div.innerHTML = `<div><div style="font-weight:800; color:#722ed1; font-size:1.2rem;">🎖️ PRESTIGE ACHIEVED</div><div style="font-style:italic; font-size:0.9rem; margin-top:4px;">"${quip}"</div></div>`;
+            div.innerHTML = `<div><div style="font-weight:800; color:#722ed1; font-size:1.2rem;">${icon} PRESTIGE ACHIEVED</div><div style="font-style:italic; font-size:0.9rem; margin-top:4px;">"${quip}"</div></div>`;
             div.style.padding = '24px 32px';
-            div.style.minWidth = '300px';
+            div.style.minWidth = '350px';
         } else {
-            div.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
+            div.innerHTML = `<span style="color:${borderColor}; font-weight:bold;">${icon}</span> <span>${msg}</span>`;
         }
 
         document.body.appendChild(div);
@@ -98,12 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 div.remove();
                 activeNotifications = activeNotifications.filter(n => n !== div);
-                // Reposition remaining
                 activeNotifications.forEach((n, i) => {
-                    n.style.top = `${24 + (i * 80)}px`;
+                    n.style.top = `${24 + (i * 85)}px`;
                 });
             }, 600);
-        }, isPrestige ? 6000 : 4000);
+        }, type === 'prestige' ? 6000 : 4000);
     };
 
     const syncUI = () => {
@@ -210,12 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.gateways--;
                     state.money += state.askingPrice;
                     if (demand < 50) {
-                        notify(`SCAMMED! You sold a gateway for $${state.askingPrice.toLocaleString()} despite low demand! 💸`);
+                        notify(`SCAMMED! You sold a gateway for $${state.askingPrice.toLocaleString()} despite low demand! 💸`, 'success');
                     } else {
-                        notify(`SOLD! +$${state.askingPrice.toLocaleString()} Federation Credits`);
+                        notify(`SOLD! +$${state.askingPrice.toLocaleString()}`, 'success');
                     }
                 } else {
-                    notify(`NOT SOLD! Refunded due to slow orbital delivery.`);
+                    notify(`NOT SOLD! Refunded due to slow orbital delivery.`, 'error');
                 }
                 save();
                 syncUI();
@@ -230,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.prestige++;
                 save();
                 syncUI();
-                notify('', true); // Trigger prestige special notification
+                notify('', 'prestige');
             }
         };
     }
@@ -356,7 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Add CSS for bounceOut
     const style = document.createElement('style');
     style.innerHTML = `
         @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
