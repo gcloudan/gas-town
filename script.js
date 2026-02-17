@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v15'; 
+    const KEY = 'istio_station_final_v20'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Logic Sync
+        // Action states
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
@@ -93,11 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
         if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
         
-        // UPGRADE COSTS: Ships for Scrapper, Gateways for Assembler
+        // UPGRADE COSTS: 10 Scrap for Scrapper, 10 Ships for Assembler
         if (refs.btnScrapperMinus) refs.btnScrapperMinus.disabled = state.autoScrappers < 1;
-        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.ships < 5;
+        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.scrap < 10;
         if (refs.btnAssemblerMinus) refs.btnAssemblerMinus.disabled = state.autoAssemblers < 1;
-        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.gateways < 5;
+        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.ships < 10;
 
         if (refs.askingPriceDisp) refs.askingPriceDisp.textContent = state.askingPrice.toLocaleString();
         if (refs.demandDisp) refs.demandDisp.textContent = calculateDemand();
@@ -193,11 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Auto-Scrapper Costs 5 Ships
+    // Auto-Scrapper Costs 10 Scrap
     if (refs.btnScrapperPlus) {
         refs.btnScrapperPlus.onclick = () => {
-            if (state.ships >= 5) {
-                state.ships -= 5;
+            if (state.scrap >= 10) {
+                state.scrap -= 10;
                 state.autoScrappers++;
                 save();
                 syncUI();
@@ -208,18 +208,17 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnScrapperMinus.onclick = () => {
             if (state.autoScrappers > 0) {
                 state.autoScrappers--;
-                // NO REFUND
                 save();
                 syncUI();
             }
         };
     }
 
-    // Auto-Assembler Costs 5 Gateways
+    // Auto-Assembler Costs 10 Ships
     if (refs.btnAssemblerPlus) {
         refs.btnAssemblerPlus.onclick = () => {
-            if (state.gateways >= 5) {
-                state.gateways -= 5;
+            if (state.ships >= 10) {
+                state.ships -= 10;
                 state.autoAssemblers++;
                 save();
                 syncUI();
@@ -230,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
         refs.btnAssemblerMinus.onclick = () => {
             if (state.autoAssemblers > 0) {
                 state.autoAssemblers--;
-                // NO REFUND
                 save();
                 syncUI();
             }
