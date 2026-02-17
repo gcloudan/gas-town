@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v21'; 
+    // Version 30 to force a clean reset of state and logic
+    const KEY = 'istio_station_v30_final'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -84,19 +85,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Logic Sync
-        if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
-        if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
+        // Action states - Follow labels strictly
+        if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2; // Assemble Ship (2 Scrap)
+        if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;   // Forge Gateway (2 Ships)
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
         if (refs.btnPrestige) refs.btnPrestige.disabled = state.money < 10000;
         
         if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
         if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
         
+        // UPGRADE COSTS strictly follow labels: 10 Scrap for Scrapper, 10 Ships for Assembler
         if (refs.btnScrapperMinus) refs.btnScrapperMinus.disabled = state.autoScrappers < 1;
-        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.scrap < 10;
+        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.scrap < 10; // Auto-Scrapper (10 Scrap)
+        
         if (refs.btnAssemblerMinus) refs.btnAssemblerMinus.disabled = state.autoAssemblers < 1;
-        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.ships < 10;
+        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.ships < 10; // Auto-Assembler (10 Ships)
 
         if (refs.askingPriceDisp) refs.askingPriceDisp.textContent = state.askingPrice.toLocaleString();
         if (refs.demandDisp) refs.demandDisp.textContent = calculateDemand();
@@ -119,10 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_prestige', state.prestige);
     };
 
-    // Logic implementation
+    // Logic implementation - EXACTLY following user's labels and numbers
     if (refs.btnCollectScrap) {
         refs.btnCollectScrap.onclick = () => {
-            state.scrap += 1;
+            state.scrap += 1; // +1 scrap metal only
             save();
             syncUI();
         };
@@ -131,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refs.btnBuildShip) {
         refs.btnBuildShip.onclick = () => {
             if (state.scrap >= 2) {
-                state.scrap -= 2;
+                state.scrap -= 2; // Assemble Ship (2 Scrap)
                 state.ships++;
                 save();
                 syncUI();
@@ -142,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refs.btnForgeGW) {
         refs.btnForgeGW.onclick = () => {
             if (state.ships >= 2) {
-                state.ships -= 2;
+                state.ships -= 2; // Forge Gateway (2 Ships)
                 state.gateways++;
                 save();
                 syncUI();
@@ -162,21 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.gateways--;
                     state.money += state.askingPrice;
                     if (demand < 50) {
-                        notify(`SCAMMED! You sold a gateway for $${state.askingPrice.toLocaleString()} despite near-zero demand! 💸`);
-                    } else if (demand >= 100) {
-                        notify(`SOLD! SOLD! SOLD! +$${state.askingPrice.toLocaleString()}`);
+                        notify(`SCAMMED! You sold a gateway for $${state.askingPrice.toLocaleString()} despite low demand! 💸`);
                     } else {
-                        notify(`Successful Sale: +$${state.askingPrice.toLocaleString()}`);
+                        notify(`SOLD! +$${state.askingPrice.toLocaleString()} Federation Credits`);
                     }
                 } else {
                     // Failure
-                    const reasons = [
-                        "Refunded due to slow orbital delivery.",
-                        "Client realized they could just use NGINX.",
-                        "Federation inspector found a configuration drift.",
-                        "Credits lost in a wormhole during transfer."
-                    ];
-                    notify(`NOT SOLD! ${reasons[Math.floor(Math.random() * reasons.length)]}`);
+                    notify(`NOT SOLD! Refunded due to slow orbital delivery.`);
                 }
                 save();
                 syncUI();
@@ -196,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Market Price Controls
     if (refs.btnPricePlus) {
         refs.btnPricePlus.onclick = () => {
             state.askingPrice += 100;
@@ -213,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Auto-Scrapper strictly costs 10 Scrap
     if (refs.btnScrapperPlus) {
         refs.btnScrapperPlus.onclick = () => {
             if (state.scrap >= 10) {
@@ -233,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Auto-Assembler strictly costs 10 Ships
     if (refs.btnAssemblerPlus) {
         refs.btnAssemblerPlus.onclick = () => {
             if (state.ships >= 10) {
