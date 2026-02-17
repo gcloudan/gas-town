@@ -80,7 +80,7 @@ body {
 /* Content Area */
 .ant-content {
     flex: 1;
-    padding: 40px 0 120px 0; /* Extra room for prestige float */
+    padding: 40px 0 80px 0;
 }
 
 /* Hero Section */
@@ -144,6 +144,10 @@ body {
     border-radius: var(--radius);
     margin-bottom: 48px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card-relative {
+    position: relative;
 }
 
 .ant-card-head {
@@ -388,54 +392,48 @@ body {
     cursor: not-allowed;
 }
 
-/* Floating Prestige Control */
-.ant-prestige-float {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: white;
-    padding: 16px 24px;
-    border: 1px solid var(--border);
+/* Integrated Prestige Control */
+.ant-prestige-inline {
+    margin-top: 32px;
+    padding: 24px;
+    background: #f9f0ff; /* Light purple tint */
+    border: 1px solid #d3adf7;
     border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 200px;
-    animation: slideUp 0.5s ease-out;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
 }
 
 .prestige-stat {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .prestige-stat .label {
     font-weight: 600;
     color: var(--text-sec);
+    font-size: 12px;
+    text-transform: uppercase;
 }
 
 .prestige-stat .value {
     font-weight: 800;
-    color: #722ed1; /* Prestige purple */
-    font-size: 1.1rem;
+    color: #722ed1;
+    font-size: 1.5rem;
 }
 
 .prestige-btn {
     background: #722ed1 !important;
     border-color: #722ed1 !important;
+    height: 48px;
+    min-width: 160px;
 }
 
 .prestige-btn:hover {
     background: #9254de !important;
     border-color: #9254de !important;
-}
-
-@keyframes slideUp {
-    from { transform: translateY(100px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
 }
 
 /* Hall of Fame */
@@ -588,8 +586,8 @@ body {
 }
 
 @media (max-width: 768px) {
-    .ant-row, .arch-container, .feature-grid, .shipyard-grid, .fame-header, .ant-footer-row { flex-direction: column; align-items: flex-start; }
+    .ant-row, .arch-container, .feature-grid, .shipyard-grid, .fame-header, .ant-footer-row, .ant-prestige-inline { flex-direction: column; align-items: flex-start; }
     .border-left { border-left: none; padding-left: 0; padding-top: 32px; border-top: 1px solid var(--border); }
     .star-field { justify-content: flex-start; }
-    .ant-prestige-float { width: calc(100% - 48px); left: 24px; right: 24px; }
+    .prestige-btn { width: 100%; }
 }

@@ -151,7 +151,7 @@
                 </div>
             </section>
 
-            <section id="shipyard" class="ant-card">
+            <section id="shipyard" class="ant-card card-relative">
                 <div class="ant-card-head">Orbital Shipyard & Gateway Forge</div>
                 <div class="ant-card-body">
                     <p>Build your Istio fleet. Manual sales to the Federation yield Credits.</p>
@@ -197,7 +197,7 @@
                         </div>
                         <div class="shipyard-upgrades">
                             <div class="upgrade-row">
-                                <span class="upgrade-name">Auto-Scrapper (5 Ships)</span>
+                                <span class="upgrade-name">Auto-Scrapper (10 Scrap)</span>
                                 <div class="ant-btn-group">
                                     <button id="btn-scrapper-minus" class="ant-btn-small">-</button>
                                     <span id="scrapper-count-display" class="upgrade-count">0</span>
@@ -205,7 +205,7 @@
                                 </div>
                             </div>
                             <div class="upgrade-row">
-                                <span class="upgrade-name">Auto-Assembler (5 Gateways)</span>
+                                <span class="upgrade-name">Auto-Assembler (10 Ships)</span>
                                 <div class="ant-btn-group">
                                     <button id="btn-assembler-minus" class="ant-btn-small">-</button>
                                     <span id="assembler-count-display" class="upgrade-count">0</span>
@@ -213,6 +213,16 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <!-- Prestige Integrated into Shipyard -->
+                    <div class="ant-prestige-inline">
+                        <div class="prestige-stat">
+                            <span class="label">Vanguard Prestige</span>
+                            <span class="value"><span id="prestige-count">0</span> 🎖️</span>
+                        </div>
+                        <button id="btn-prestige" class="ant-btn-primary prestige-btn">
+                            Prestige ($10k)
+                        </button>
                     </div>
                 </div>
             </section>
@@ -256,17 +266,6 @@
             Istio Space Station ©2026 Engineering Operations Center • EOL March 2026 Threshold
         </div>
     </footer>
-
-    <!-- Prestige Floating Control -->
-    <div class="ant-prestige-float">
-        <div class="prestige-stat">
-            <span class="label">Vanguard Prestige</span>
-            <span class="value"><span id="prestige-count">0</span> 🎖️</span>
-        </div>
-        <button id="btn-prestige" class="ant-btn-primary prestige-btn">
-            Prestige ($10k)
-        </button>
-    </div>
 
     <script src="script.js"></script>
 </body>
