@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    // Version 30 to force a clean reset of state and logic
-    const KEY = 'istio_station_v30_final'; 
+    const KEY = 'istio_station_final_v25'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -57,6 +56,56 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.round(demand);
     };
 
+    // Notification Stacking System
+    let activeNotifications = [];
+    const notify = (msg, isPrestige = false) => {
+        const div = document.createElement('div');
+        div.className = isPrestige ? 'ant-notify prestige-special' : 'ant-notify';
+        
+        const index = activeNotifications.length;
+        const topOffset = 24 + (index * 80);
+        
+        div.style.cssText = `
+            position: fixed; top: ${topOffset}px; right: 24px; background: #fff;
+            padding: 16px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 2000; border-left: 4px solid ${isPrestige ? '#722ed1' : '#52c41a'}; border-radius: 2px;
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            display: flex; align-items: center; gap: 12px;
+        `;
+
+        if (isPrestige) {
+            const quips = [
+                "Go back to work, space cadet.",
+                "Touch some grass... if you can find any in orbit.",
+                "Imagine having this much free time.",
+                "The Federation is unimpressed, but here's your medal.",
+                "Prestige? In this economy?",
+                "Great, another medal to collect space-dust."
+            ];
+            const quip = quips[Math.floor(Math.random() * quips.length)];
+            div.innerHTML = `<div><div style="font-weight:800; color:#722ed1; font-size:1.2rem;">🎖️ PRESTIGE ACHIEVED</div><div style="font-style:italic; font-size:0.9rem; margin-top:4px;">"${quip}"</div></div>`;
+            div.style.padding = '24px 32px';
+            div.style.minWidth = '300px';
+        } else {
+            div.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
+        }
+
+        document.body.appendChild(div);
+        activeNotifications.push(div);
+
+        setTimeout(() => {
+            div.style.animation = 'bounceOut 0.6s cubic-bezier(0.36, 0, 0.66, -0.56) forwards';
+            setTimeout(() => {
+                div.remove();
+                activeNotifications = activeNotifications.filter(n => n !== div);
+                // Reposition remaining
+                activeNotifications.forEach((n, i) => {
+                    n.style.top = `${24 + (i * 80)}px`;
+                });
+            }, 600);
+        }, isPrestige ? 6000 : 4000);
+    };
+
     const syncUI = () => {
         if (refs.moneyCount) refs.moneyCount.textContent = state.money.toLocaleString();
         if (refs.scrapCount) refs.scrapCount.textContent = state.scrap.toLocaleString();
@@ -85,21 +134,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Action states - Follow labels strictly
-        if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2; // Assemble Ship (2 Scrap)
-        if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;   // Forge Gateway (2 Ships)
+        if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
+        if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
         if (refs.btnPrestige) refs.btnPrestige.disabled = state.money < 10000;
         
         if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
         if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
         
-        // UPGRADE COSTS strictly follow labels: 10 Scrap for Scrapper, 10 Ships for Assembler
         if (refs.btnScrapperMinus) refs.btnScrapperMinus.disabled = state.autoScrappers < 1;
-        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.scrap < 10; // Auto-Scrapper (10 Scrap)
-        
+        if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.scrap < 10;
         if (refs.btnAssemblerMinus) refs.btnAssemblerMinus.disabled = state.autoAssemblers < 1;
-        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.ships < 10; // Auto-Assembler (10 Ships)
+        if (refs.btnAssemblerPlus) refs.btnAssemblerPlus.disabled = state.ships < 10;
 
         if (refs.askingPriceDisp) refs.askingPriceDisp.textContent = state.askingPrice.toLocaleString();
         if (refs.demandDisp) refs.demandDisp.textContent = calculateDemand();
@@ -122,10 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(KEY + '_prestige', state.prestige);
     };
 
-    // Logic implementation - EXACTLY following user's labels and numbers
+    // Logic implementation
     if (refs.btnCollectScrap) {
         refs.btnCollectScrap.onclick = () => {
-            state.scrap += 1; // +1 scrap metal only
+            state.scrap += 1;
             save();
             syncUI();
         };
@@ -134,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refs.btnBuildShip) {
         refs.btnBuildShip.onclick = () => {
             if (state.scrap >= 2) {
-                state.scrap -= 2; // Assemble Ship (2 Scrap)
+                state.scrap -= 2;
                 state.ships++;
                 save();
                 syncUI();
@@ -145,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refs.btnForgeGW) {
         refs.btnForgeGW.onclick = () => {
             if (state.ships >= 2) {
-                state.ships -= 2; // Forge Gateway (2 Ships)
+                state.ships -= 2;
                 state.gateways++;
                 save();
                 syncUI();
@@ -161,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const roll = Math.random() * 100;
                 
                 if (roll < demand) {
-                    // Success
                     state.gateways--;
                     state.money += state.askingPrice;
                     if (demand < 50) {
@@ -170,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         notify(`SOLD! +$${state.askingPrice.toLocaleString()} Federation Credits`);
                     }
                 } else {
-                    // Failure
                     notify(`NOT SOLD! Refunded due to slow orbital delivery.`);
                 }
                 save();
@@ -186,12 +230,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.prestige++;
                 save();
                 syncUI();
-                notify('Vanguard Prestige Achieved! 🎖️');
+                notify('', true); // Trigger prestige special notification
             }
         };
     }
 
-    // Market Price Controls
     if (refs.btnPricePlus) {
         refs.btnPricePlus.onclick = () => {
             state.askingPrice += 100;
@@ -209,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Auto-Scrapper strictly costs 10 Scrap
     if (refs.btnScrapperPlus) {
         refs.btnScrapperPlus.onclick = () => {
             if (state.scrap >= 10) {
@@ -230,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Auto-Assembler strictly costs 10 Ships
     if (refs.btnAssemblerPlus) {
         refs.btnAssemblerPlus.onclick = () => {
             if (state.ships >= 10) {
@@ -266,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 changed = true;
             }
         }
-        
         if (changed) {
             save();
             syncUI();
@@ -316,18 +356,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    const notify = (msg) => {
-        const div = document.createElement('div');
-        div.style.cssText = `
-            position: fixed; top: 24px; right: 24px; background: #fff;
-            padding: 16px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            z-index: 2000; border-left: 4px solid #52c41a; border-radius: 2px;
-            animation: slideIn 0.3s forwards;
-        `;
-        div.innerHTML = `<span style="color:#52c41a">✔</span> ${msg}`;
-        document.body.appendChild(div);
-        setTimeout(() => div.remove(), 3000);
-    };
+    // Add CSS for bounceOut
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes bounceOut {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-20px); }
+            100% { transform: translateX(120%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
 
     syncUI();
 });
