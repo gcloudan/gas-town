@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v20'; 
+    const KEY = 'istio_station_final_v21'; 
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Action states
+        // Logic Sync
         if (refs.btnBuildShip) refs.btnBuildShip.disabled = state.scrap < 2;
         if (refs.btnForgeGW) refs.btnForgeGW.disabled = state.ships < 2;
         if (refs.btnSellGW) refs.btnSellGW.disabled = state.gateways < 1;
@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (refs.scrapperCountDisp) refs.scrapperCountDisp.textContent = state.autoScrappers;
         if (refs.assemblerCountDisp) refs.assemblerCountDisp.textContent = state.autoAssemblers;
         
-        // UPGRADE COSTS: 10 Scrap for Scrapper, 10 Ships for Assembler
         if (refs.btnScrapperMinus) refs.btnScrapperMinus.disabled = state.autoScrappers < 1;
         if (refs.btnScrapperPlus) refs.btnScrapperPlus.disabled = state.scrap < 10;
         if (refs.btnAssemblerMinus) refs.btnAssemblerMinus.disabled = state.autoAssemblers < 1;
@@ -155,11 +154,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refs.btnSellGW) {
         refs.btnSellGW.onclick = () => {
             if (state.gateways >= 1) {
-                state.gateways--;
-                state.money += state.askingPrice;
+                const demand = calculateDemand();
+                const roll = Math.random() * 100;
+                
+                if (roll < demand) {
+                    // Success
+                    state.gateways--;
+                    state.money += state.askingPrice;
+                    if (demand < 50) {
+                        notify(`SCAMMED! You sold a gateway for $${state.askingPrice.toLocaleString()} despite near-zero demand! 💸`);
+                    } else if (demand >= 100) {
+                        notify(`SOLD! SOLD! SOLD! +$${state.askingPrice.toLocaleString()}`);
+                    } else {
+                        notify(`Successful Sale: +$${state.askingPrice.toLocaleString()}`);
+                    }
+                } else {
+                    // Failure
+                    const reasons = [
+                        "Refunded due to slow orbital delivery.",
+                        "Client realized they could just use NGINX.",
+                        "Federation inspector found a configuration drift.",
+                        "Credits lost in a wormhole during transfer."
+                    ];
+                    notify(`NOT SOLD! ${reasons[Math.floor(Math.random() * reasons.length)]}`);
+                }
                 save();
                 syncUI();
-                notify(`Manual Sale: +$${state.askingPrice.toLocaleString()} Federation Credits`);
             }
         };
     }
@@ -193,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Auto-Scrapper Costs 10 Scrap
     if (refs.btnScrapperPlus) {
         refs.btnScrapperPlus.onclick = () => {
             if (state.scrap >= 10) {
@@ -214,7 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Auto-Assembler Costs 10 Ships
     if (refs.btnAssemblerPlus) {
         refs.btnAssemblerPlus.onclick = () => {
             if (state.ships >= 10) {
