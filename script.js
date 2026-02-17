@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Store
-    const KEY = 'istio_station_final_v30'; // Reset for clean logic
+    const KEY = 'istio_station_final_v31'; // Clean logic reset
     let state = {
         stars: parseInt(localStorage.getItem(KEY + '_stars') || '0'),
         logs: JSON.parse(localStorage.getItem(KEY + '_logs') || '[]'),
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.round(demand);
     };
 
-    // Stacking Notification System with Types
+    // Stacking Notification System with funny quips
     let activeNotifications = [];
     const notify = (msg, type = 'success') => {
         const div = document.createElement('div');
@@ -67,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let borderColor = '#52c41a';
         let icon = '✔';
-        let textColor = 'inherit';
 
         if (type === 'error') {
             borderColor = '#ff4d4f';
@@ -93,12 +92,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Imagine having this much free time.",
                 "The Federation is unimpressed, but here's your medal.",
                 "Prestige? In this economy?",
-                "Great, another medal to collect space-dust."
+                "Great, another medal to collect space-dust.",
+                "You're a legend in your own mind. Congrats.",
+                "Wow, you clicked buttons. Heroic."
             ];
             const quip = quips[Math.floor(Math.random() * quips.length)];
-            div.innerHTML = `<div><div style="font-weight:800; color:#722ed1; font-size:1.2rem;">${icon} PRESTIGE ACHIEVED</div><div style="font-style:italic; font-size:0.9rem; margin-top:4px;">"${quip}"</div></div>`;
-            div.style.padding = '24px 32px';
-            div.style.minWidth = '350px';
+            div.innerHTML = `<div><div style="font-weight:800; color:#722ed1; font-size:1.1rem;">${icon} PRESTIGE ACHIEVED</div><div style="font-style:italic; font-size:0.85rem; margin-top:4px;">"${quip}"</div></div>`;
+            div.style.padding = '20px 28px';
+            div.style.minWidth = '320px';
+        } else if (type === 'success' && msg.includes('SOLD')) {
+            const soldQuips = [
+                `SOLD! to the gentleman in the suspicious hat for $${state.askingPrice.toLocaleString()}!`,
+                `SOLD! to the highest bidder (who is definitely not a bot) for $${state.askingPrice.toLocaleString()}!`,
+                `Hook, line, and sinker! $${state.askingPrice.toLocaleString()} secured!`,
+                `You convinced them YAML is a valid life choice. SOLD! (+$${state.askingPrice.toLocaleString()})`,
+                `SOLD! for $${state.askingPrice.toLocaleString()}. They didn't even read the SLA!`,
+                `Traded for a handful of space beans and $${state.askingPrice.toLocaleString()}!`,
+                `SOLD! to the frantic dev at 3 AM for $${state.askingPrice.toLocaleString()}!`,
+                `Federation budget successfully drained! +$${state.askingPrice.toLocaleString()}`,
+                `Another gateway, another thousand credits closer to retirement. SOLD!`,
+                `SOLD! $${state.askingPrice.toLocaleString()} added to the 'Grass Touching' fund.`
+            ];
+            const finalMsg = soldQuips[Math.floor(Math.random() * soldQuips.length)];
+            div.innerHTML = `<span style="color:${borderColor}; font-weight:bold;">${icon}</span> <span>${finalMsg}</span>`;
         } else {
             div.innerHTML = `<span style="color:${borderColor}; font-weight:bold;">${icon}</span> <span>${msg}</span>`;
         }
@@ -222,9 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.gateways--;
                     state.money += state.askingPrice;
                     if (demand < 50) {
-                        notify(`SCAMMED! You sold a gateway for $${state.askingPrice.toLocaleString()} despite low demand! 💸`, 'success');
+                        notify(`SCAMMED! You sold a gateway despite low demand! 💸`, 'success');
                     } else {
-                        notify(`SOLD! +$${state.askingPrice.toLocaleString()}`, 'success');
+                        notify(`SOLD!`, 'success'); // notify function handles randomizing the message
                     }
                 } else {
                     notify(`NOT SOLD! Refunded due to slow orbital delivery.`, 'error');
@@ -368,6 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Add CSS for bounceOut
     const style = document.createElement('style');
     style.innerHTML = `
         @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
